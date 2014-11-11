@@ -919,8 +919,13 @@ void esDrawLineU(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
       y1 = y1 + y_inc;
     }
   }
+  #ifdef SKIP_LAST_PIXEL
   if(!IsSLP)
     esSetPixel(BitMap, x1, y1, Color);
+  #else
+  esSetPixel(BitMap, x1, y1, Color);
+  #endif
+
 }
 
 //******************************************************************************
@@ -1168,9 +1173,9 @@ void esDrawLine(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
   if(IsTranslate)TRANSLATE_RECT(x1, y1, x2, y2, CenterX, CenterY);
   #endif 
 
-  #ifdef SKIP_LAST_PIXEL
-  if(IsSLP)DECREMENT_POINT(x2, y2);
-  #endif
+//  #ifdef SKIP_LAST_PIXEL
+//  if(IsSLP)DECREMENT_POINT(x2, y2);
+//  #endif
 
   if(r = esClipLine(BitMap->Width, BitMap->Height, &x1, &y1, &x2, &y2))
   {
@@ -1317,7 +1322,7 @@ void esDrawElipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char 
 
   NORMALIZE_RECT(x1, y1, x2, y2, t);
   #ifdef SKIP_LAST_PIXEL
-  if(IsSLP)DECREMENT_POINT(x2, y2);
+  if(IsSLP)y2--; // decrement x2 does LineU automatically
   if(x2 < x1 || y2 < y1)return;
   #endif
 
@@ -1418,7 +1423,7 @@ void esFillElipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char 
 
   NORMALIZE_RECT(x1, y1, x2, y2, t);
   #ifdef SKIP_LAST_PIXEL
-  if(IsSLP)DECREMENT_POINT(x2, y2);
+  if(IsSLP)y2--; // decrement x2 does LineU automatically
   if(x2 < x1 || y2 < y1)return;
   #endif
 

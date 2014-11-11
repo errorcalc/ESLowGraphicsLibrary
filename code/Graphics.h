@@ -18,6 +18,7 @@
 #define USE_PRECALC_SCANLINE
 #define USE_TRANSLATE
 #define USE_SAFE_GRAPHICS
+#define SKIP_LAST_PIXEL
 //==========================================
 
 #define SWAP(a, b, t)  \
@@ -47,8 +48,8 @@
 // FUCKED MAKRO
 // note: if edit this macro then edit esScanlinePF in "Graphics.c"
 #define ES_SCANLINE_PF(Width, pf)                     \
-  ((pf == pf1bit)?Scanline1(Width):                   \
-   (pf == pf4bit)?Scanline4(Width):Scanline2(Width))
+  (((pf == pf1bit)?Scanline1(Width):                   \
+   ((pf == pf4bit)?Scanline4(Width):Scanline2(Width))))
 
 #ifdef USE_SCANLINE_MACRO
   #define esScanlinePF ES_SCANLINE_PF   
