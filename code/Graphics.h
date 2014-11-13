@@ -29,7 +29,7 @@
 }
 
 #define MAX(a, b) (((a)>=(b))?(a):(b))
-
+#define MIN(a, b) (((a)<(b))?(a):(b))
 #define ABS(value) ((value) < 0)?-(value):(value)
 
 //==========================================
@@ -113,6 +113,21 @@ typedef struct
 } TRect, *PRect;
 
 typedef unsigned TColor;
+
+typedef enum
+{
+  alLeft = 1,
+  alRight = 2,
+  alTop = 4,
+  alBottom = 8,
+  alLeftTop = alLeft | alTop,
+  alRightTop = alRight | alTop,
+  alLeftBottom = alLeft | alBottom,
+  alRightBottom = alRight | alBottom,
+  alCenter = 256,
+  alStretch = 512,
+  alFit = 1024,
+} TAlign;
 
 typedef enum
 {
@@ -280,6 +295,9 @@ int esStrechDraw(PBitMap Dst, TRect d, PBitMap Src, TRect s);
 int esStrechDrawRop01(PBitMap Dst, TRect d, PBitMap Src, TRect s, TRop Rop);
 int esStrechDrawRop04(PBitMap Dst, TRect d, PBitMap Src, TRect s, TRop Rop);
 int esStrechDrawRop(PBitMap Dst, TRect d, PBitMap Src, TRect s, TRop Rop);
+// Align
+int esAlignDrawRop(PBitMap Dst, PBitMap Src, unsigned int Align, TRop Rop);
+int esAlignDraw(PBitMap Dst, PBitMap Src, unsigned int Align);
 
 //******************************************************************************
 // BitMap effects
@@ -294,15 +312,18 @@ void esRotate90BitMap(PBitMap BitMap, int Angle); // 0, 1, 2, 3
 // TBitMap
 //******************************************************************************
 unsigned char *esCreateBitMapData(int Width, int Height, TPixelFormat pf);
-unsigned char *esResizeBitMapData(unsigned char *Pixels, int Width, int Height, TPixelFormat pf);   
+unsigned char *esResizeBitMapData(unsigned char *Pixels, int Width, int Height, TPixelFormat pf);
+int esLoadBitMapData(PBitMap BitMap, const unsigned char *pSrc);
 void esFreeBitMapData(unsigned char *Pixels);
 int esIsCompatibleBitMap(PBitMap Dst, PBitMap Src);
 //---
 PBitMap esCreateBitMap(int Width, int Height, TPixelFormat pf); 
+PBitMap esCreateBitMapOf(int Width, int Height, TPixelFormat pf, const unsigned char *Pixels); 
 PBitMap esCreateStaticBitMap(int Width, int Height, TPixelFormat pf, const unsigned char *Pixels);
 PBitMap esCreateStaticMaskBitMap(int Width, int Height, TPixelFormat pf, const unsigned char *Pixels,
   const unsigned char *Mask);
 void esResizeBitMap(PBitMap BitMap, int Width, int Height); 
+void esResizeBitMapEx(PBitMap BitMap, int Width, int Height, unsigned char Color, unsigned int Align);
 PBitMap esCloneBitMap(PBitMap BitMap);
 PBitMap esFreeBitMap(PBitMap BitMap);
 PBitMap esFreeStaticBitMap(PBitMap BitMap);

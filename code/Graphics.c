@@ -271,6 +271,18 @@ int esScanline(PBitMap BitMap)
 }
 #endif
 
+TRect esGetBitMapRect(PBitMap BitMap)
+{
+  TRect R;
+  
+  R.x1 = 0;
+  R.y1 = 0;
+  R.x2 = BitMap->Width;
+  R.y2 = BitMap->Height;
+  
+  return R;
+}
+
 //******************************************************************************
 // System graphics
 //******************************************************************************
@@ -4250,6 +4262,68 @@ int esStrechDrawRop(PBitMap Dst, TRect d, PBitMap Src, TRect s, TRop Rop)
   }
 }
 
+// Align
+int esAlignDrawRop(PBitMap Dst, PBitMap Src, unsigned int Align, TRop Rop)
+{
+  int x, y, t;
+  TRect d;
+
+  if(Align & alStretch)
+    return esStrechDrawRop(Dst, esGetBitMapRect(Dst), Src, esGetBitMapRect(Src), Rop);
+  else
+    if(Align & alFit)
+    {
+      t = MIN(Dst->Width, Dst->Height);
+
+      if((float)(Dst->Height / (float)Src->Height) * Src->Width > t)//w > h)
+      {
+        d.x1 = 0;
+        d.x2 = Dst->Width;
+        d.y1 = Dst->Height / 2 - Dst->Width / 2;
+        d.y2 = d.y1 + Dst->Width;
+      }
+      else
+      {
+        d.y1 = 0;
+        d.y2 = Dst->Height;
+        d.x1 = Dst->Width / 2 - Dst->Height / 2;
+        d.x2 = d.x1 + Dst->Height;
+      }
+      return esStrechDrawRop(Dst, d, Src, esGetBitMapRect(Src), Rop);
+    }
+
+  if((Align & (alTop | alBottom)) == 0)
+  {
+    y = Dst->Height / 2 - Src->Height / 2;
+  }
+  else
+  {
+    if(Align & alTop)
+      y = 0;
+    else
+      y = Dst->Height - Src->Height;
+  }
+
+  if((Align & (alLeft | alRight)) == 0)
+  {
+    x = Dst->Width / 2 - Src->Width / 2;
+  }
+  else
+  {
+    if(Align & alLeft)
+      x = 0;
+    else
+      x = Dst->Width - Src->Width;
+  }
+ 
+  return esBitBltRop(Dst, x, y, Src, Rop);
+}
+
+int esAlignDraw(PBitMap Dst, PBitMap Src, unsigned int Align)
+{
+  return esAlignDrawRop(Dst, Src, Align, ropCopy);
+}
+
 //******************************************************************************
 // BitMap effects
 //******************************************************************************
@@ -4412,6 +4486,25 @@ unsigned char *esResizeBitMapData(unsigned char *Pixels, int Width, int Height, 
   return Pixels;
 }
 
+int esLoadBitMapData(PBitMap BitMap, const unsigned char *pSrc)
+{
+  unsigned char *pDst;
+  int Scanline;
+
+  if(pSrc == NULL)
+    return 1;
+
+  Scanline = esScanline(BitMap);
+
+  for(pDst = BitMap->Pixels; pDst < BitMap->Pixels + BitMap->Height * Scanline; pDst++)
+  {
+    *pDst = *pSrc;
+    pSrc++;
+  }
+
+  return 0;
+}
+
 void esFreeBitMapData(unsigned char *Pixels)
 {
   free((void*)Pixels);
@@ -4444,6 +4537,17 @@ PBitMap esCreateBitMap(int Width, int Height, TPixelFormat pf)
   BitMap->Pixels = esCreateBitMapData(Width, Height, pf);
   BitMap->Mask = 0;
   // add exept
+  return BitMap;
+}
+
+PBitMap esCreateBitMapOf(int Width, int Height, TPixelFormat pf, const unsigned char *Pixels)
+{
+  PBitMap BitMap;
+
+  BitMap = esCreateBitMap(Width, Height, pf);
+
+  esLoadBitMapData(BitMap, Pixels);
+
   return BitMap;
 }
 
@@ -4492,6 +4596,22 @@ void esResizeBitMap(PBitMap BitMap, int Width, int Height)
   #ifdef USE_PRECALC_SCANLINE
   BitMap->Scanline = esScanlinePF(BitMap->Width, BitMap->PixelFormat);
   #endif
+}
+
+void esResizeBitMapEx(PBitMap BitMap, int Width, int Height, unsigned char Color, unsigned int Align)
+{
+  PBitMap Temp;
+
+  Temp = esCloneBitMap(BitMap);
+
+  esResizeBitMap(BitMap, Width, Height);
+  
+  //if((Align & alStretch) == 0)
+  esClear(BitMap, Color);
+
+  esAlignDraw(BitMap, Temp, Align);
+
+  esFreeBitMap(Temp);
 }
 
 PBitMap esCloneBitMap(PBitMap BitMap)
