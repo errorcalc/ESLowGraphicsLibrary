@@ -68,12 +68,12 @@ void SysDrawBuffer(unsigned char *p)
   if(PixelFormat == 4)
   {
     BitsInfo->bmiHeader.biBitCount = 4;
-    BitsInfo->bmiHeader.biSizeImage = ScreenHeight * ((BitsInfo->bmiHeader.biWidth + 1) / 2);
+    //BitsInfo->bmiHeader.biSizeImage = ScreenHeight * ((ScreenHeight + 1) / 2);
   }
   if(PixelFormat == 1)
   {
     BitsInfo->bmiHeader.biBitCount = 1;
-    BitsInfo->bmiHeader.biSizeImage = ScreenHeight * ((BitsInfo->bmiHeader.biWidth + 7) / 8);
+    //BitsInfo->bmiHeader.biSizeImage = ScreenHeight * ((ScreenHeight + 7) / 8);
   }
 
   for(i = 0; i < CountColors; i++)
@@ -101,7 +101,17 @@ void SysDrawBuffer(unsigned char *p)
 
 void SysSleep(int MS)
 {
-  Sleep(MS);
+  long time;
+
+  time = SysGetTime();
+
+  do
+  {
+    Sleep(0);
+    UpdateMessages();
+  }
+  while(SysGetTime() < time + MS);
+  //Sleep(MS);
 }
 
 long SysGetTime(void)

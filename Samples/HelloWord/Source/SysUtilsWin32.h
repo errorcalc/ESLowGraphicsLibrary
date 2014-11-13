@@ -3,6 +3,7 @@
 
 #include "windows.h"
 
+#define CS_ZOOM1 0x00000000
 #define CS_ZOOM2 0x00000001
 #define CS_ZOOM3 0x00000002
 #define CS_ZOOM4 0x00000003
