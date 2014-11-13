@@ -1,6 +1,6 @@
 /*******************************************************************************
 **                мЮ 1 НЙРЪАПЪ 2014, хыс пюанрс охрепе, япнвмн                **
-**                     ErrorSoftLowGraphicsLibrary v0.8.1                     **
+**                     ErrorSoftLowGraphicsLibrary v0.8.2                     **
 **         Free using and editing in non commercial project.                  **
 ** errorsoft@mail.ru or Enter256@yandex.ru                                    **
 **                               for information of use in commerital project **
