@@ -26,8 +26,8 @@ void SampleMain(void)
 
   // load bmp
   GetModuleFileNameA(NULL, ExePath, MAX_PATH);
-  if(strrchr(ExePath, "/") != NULL)
-    *strrchr(ExePath, "/") = '/0';
+  if(strrchr(ExePath, '\\') != NULL)
+    *strrchr(ExePath, '\\') = '/0';
   for(i = 0; i < SLIDE_COUNT; i++)
   {
     sprintf(FileName, "%s%s%i.bmp", ExePath, "/../Source/Pictures/", i + 1, ".bmp");
