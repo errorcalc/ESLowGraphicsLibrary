@@ -283,6 +283,37 @@ TRect esGetBitMapRect(PBitMap BitMap)
   return R;
 }
 
+int esPFToBitCount(TPixelFormat pf)
+{
+  switch(pf)
+  {
+    case pf1bit:
+      return 1;
+    case pf2bit:;
+    case pfC2:
+      return 2;    
+    case pf4bit:
+      return 4;
+    default:
+      return -1;
+  }
+}
+
+TPixelFormat esBitCountToPF(int Count)
+{
+  switch(Count)
+  {
+    case 1:
+      return pf1bit;
+    case 2:
+      return pf2bit;    
+    case 4:
+      return pf4bit;
+    default: 
+      return pfUnsupport;
+  }
+}
+
 //******************************************************************************
 // System graphics
 //******************************************************************************
@@ -4518,6 +4549,25 @@ int esIsCompatibleBitMap(PBitMap Dst, PBitMap Src)
 }
 
 //------------------------------------------------------------------------------
+
+PBitMap esCreateBlankBitMap(TPixelFormat pf)
+{
+  PBitMap BitMap;
+  
+  BitMap = (PBitMap)malloc(sizeof(TBitMap));
+
+  BitMap->Width = 0;
+  BitMap->Height = 0;
+  BitMap->PixelFormat = pf;
+  BitMap->AlphaFormat = afNone;
+  #ifdef USE_PRECALC_SCANLINE
+  BitMap->Scanline = 0;
+  #endif
+  BitMap->Pixels = NULL;
+  BitMap->Mask = NULL;
+
+  return BitMap;
+}
 
 PBitMap esCreateBitMap(int Width, int Height, TPixelFormat pf)
 {

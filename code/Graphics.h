@@ -30,7 +30,7 @@
 
 #define MAX(a, b) (((a)>=(b))?(a):(b))
 #define MIN(a, b) (((a)<(b))?(a):(b))
-#define ABS(value) ((value) < 0)?-(value):(value)
+#define ABS(value) (((value) < 0)?-(value):(value))
 
 //==========================================
 
@@ -131,10 +131,12 @@ typedef enum
 
 typedef enum
 {
+  pfNone = 0,
   pf1bit = 1,
   pf2bit = 2,
   pf4bit = 4,
-  pfC2 = 8
+  pfC2 = 8,
+  pfUnsupport = 128,
 } TPixelFormat;
 
 typedef enum
@@ -194,6 +196,11 @@ int esIsRealColor(TColor Color, TPixelFormat pf);
 int esScanlinePF(int Width, TPixelFormat pf);
 int esScanline(PBitMap BitMap);
 #endif
+
+TRect esGetBitMapRect(PBitMap BitMap);
+
+int esPFToBitCount(TPixelFormat pf);
+TPixelFormat esBitCountToPF(int Count);
 
 //******************************************************************************
 // System graphics
@@ -317,6 +324,7 @@ int esLoadBitMapData(PBitMap BitMap, const unsigned char *pSrc);
 void esFreeBitMapData(unsigned char *Pixels);
 int esIsCompatibleBitMap(PBitMap Dst, PBitMap Src);
 //---
+PBitMap esCreateBlankBitMap(TPixelFormat pf); 
 PBitMap esCreateBitMap(int Width, int Height, TPixelFormat pf); 
 PBitMap esCreateBitMapOf(int Width, int Height, TPixelFormat pf, const unsigned char *Pixels); 
 PBitMap esCreateStaticBitMap(int Width, int Height, TPixelFormat pf, const unsigned char *Pixels);
