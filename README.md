@@ -27,7 +27,7 @@ o esDrawRect
 o esDrawLine
 o esDrawElipse
 o esFillElipse
-• The BitBlt functions
+• The BitBlt functions 
 o 1 - bit
 ▪ esBitBlt01_Copy
 ▪ …
