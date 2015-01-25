@@ -1,6 +1,6 @@
 #include "Graphics.h"
 #include "BitMapUtils.h"
-// #include <stddef.h>
+#include "stddef.h"
 
 static const unsigned char StdHatch_pf2bit[] =
 {
