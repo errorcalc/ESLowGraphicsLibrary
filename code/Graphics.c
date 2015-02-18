@@ -1066,19 +1066,19 @@ void esFillRect(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
   switch(BitMap->PixelFormat)
   {
     case pf1bit:
-      for(y = y1; y < y2; y++)
-        esDrawHLine1(BitMap, x1, x2-1, y, Color);
+      for(y = y1; y <= y2; y++)
+        esDrawHLine1(BitMap, x1, x2, y, Color);
       break;
-    
+
     case pf2bit:;
     case pfC2:
-      for(y = y1; y < y2; y++)
-        esDrawHLine2(BitMap, x1, x2-1, y, Color);
+      for(y = y1; y <= y2; y++)
+        esDrawHLine2(BitMap, x1, x2, y, Color);
       break;
       
     case pf4bit:
-      for(y = y1; y < y2; y++)
-        esDrawHLine4(BitMap, x1, x2-1, y, Color);
+      for(y = y1; y <= y2; y++)
+        esDrawHLine4(BitMap, x1, x2, y, Color);
       break;
   } 
 }
@@ -1210,17 +1210,12 @@ void esDrawRect(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
 
 void esDrawLine(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
 {
-  int r;
-
-  #ifdef USE_TRANSLATE
-  if(IsTranslate)TRANSLATE_RECT(x1, y1, x2, y2, CenterX, CenterY);
-  #endif 
 
 //  #ifdef SKIP_LAST_PIXEL
 //  if(IsSLP)DECREMENT_POINT(x2, y2);
 //  #endif
 
-  if(r = esClipLine(BitMap->Width, BitMap->Height, &x1, &y1, &x2, &y2))
+  if(esClipLine(BitMap->Width, BitMap->Height, &x1, &y1, &x2, &y2))
   {
     esDrawLineU(BitMap, x1, y1, x2, y2, Color);
   }

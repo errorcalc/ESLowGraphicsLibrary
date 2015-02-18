@@ -80,30 +80,34 @@
 
 #define TRANSLATE_POINT(x, y, tx, ty) \
 {  \
-  x += tx; \
-  y += ty; \
+  (x) += (tx); \
+  (y) += (ty); \
 }
 
 #define TRANSLATE_RECT(x1, y1, x2, y2, tx, ty) \
 {  \
-  x1 += (tx); \
-  y1 += (ty); \
-  x2 += (tx); \
-  y2 += (ty); \
+  (x1) += (tx); \
+  (y1) += (ty); \
+  (x2) += (tx); \
+  (y2) += (ty); \
 }
 
 #define DECREMENT_POINT(x, y) \
 {  \
-  x--; \
-  y--; \
+  (x)--; \
+  (y)--; \
 }
 
 //==========================================
 // Liblary structs and enums
 //==========================================
+
+#ifndef _DEFINE_GEOMETRY_TYPES_
+#define _DEFINE_GEOMETRY_TYPES_
 typedef struct
 {
-  int x, y;
+  int X;
+  int Y;
 } TPoint, *PPoint;
 
 typedef struct
@@ -111,6 +115,7 @@ typedef struct
   int x1, y1;
   int x2, y2;
 } TRect, *PRect;
+#endif
 
 typedef unsigned TColor;
 

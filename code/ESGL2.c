@@ -54,8 +54,8 @@ int glGetZBuffer(void)
 void glSetDisp(PBitMap _Disp)
 {
   Disp = _Disp;
-  Scr.x = Disp->Width / 2;
-  Scr.y = Disp->Height / 2;
+  Scr.X = Disp->Width / 2;
+  Scr.Y = Disp->Height / 2;
 
   if(UseZ)
     glSetZBuffer(1);
