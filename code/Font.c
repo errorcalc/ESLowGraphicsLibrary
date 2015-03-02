@@ -103,7 +103,7 @@ int esDrawSymbol04_Copy(PBitMap Dst, int x, int y, unsigned char S)
 }
 
 
-int esDrawText(PBitMap Dst, int x, int y, const char *Text)
+int esDrawTextEx(PBitMap Dst, int x, int y, const char *Text)
 {
   int sx;
   int i = 0;
@@ -185,7 +185,7 @@ int esDrawText(PBitMap Dst, int x, int y, const char *Text)
 }
 
 
-int esDrawColorText(PBitMap Dst, int x, int y, const char *Text, TColor Color)
+int esDrawText(PBitMap Dst, int x, int y, const char *Text, TColor Color)
 {
   int sx;
   int i = 0;
