@@ -62,7 +62,7 @@ void SampleMain(void)
     // background
     esClear(BitMap, clWhite);
     esDrawRect(BitMap, 0, 0, 255, 127, clBlack); 
-    esFillElipse(BitMap, 0, 0, 255, 127, clBlack); 
+    esFillEllipse(BitMap, 0, 0, 255, 127, clBlack); 
     esFillRect(BitMap, 0, 0, 255, 63, clInvert); 
     // sinus
     t = SysGetTime() * 0.002;
@@ -73,8 +73,8 @@ void SampleMain(void)
       s = 5 + sin(t*0.3)*5;
       if(x % 10 == 0)
       { 
-        esFillElipse(BitMap, x - s, y - s, x + s, y + s, clBlack); 
-        esDrawElipse(BitMap, x - s, y - s, x + s, y + s, clWhite);
+        esFillEllipse(BitMap, x - s, y - s, x + s, y + s, clBlack); 
+        esDrawEllipse(BitMap, x - s, y - s, x + s, y + s, clWhite);
       }
     }
     // logo

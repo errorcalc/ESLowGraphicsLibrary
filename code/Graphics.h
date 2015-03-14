@@ -248,8 +248,8 @@ TColor esGetPixel(PBitMap BitMap, int x, int y);
 void esFillRect(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color);
 void esDrawRect(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color);
 void esDrawLine(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color);
-void esDrawElipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char Color);
-void esFillElipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char Color);
+void esDrawEllipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char Color);
+void esFillEllipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char Color);
 
 //******************************************************************************
 // The BitBlt functions

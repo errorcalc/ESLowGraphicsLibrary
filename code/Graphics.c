@@ -1352,18 +1352,23 @@ long a_square,b_square,two_a_square,two_b_square,four_a_square,four_b_square,d;
 
 
 // to do: Õ≈ ¬≈—‹  Œƒ - ÃŒ…, –¿«Œ¡–¿“‹—ﬂ\œ≈–≈œ»—¿“‹
-void esDrawElipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char Color)
+void esDrawEllipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char Color)
 {
   int col, i, row, bnew, dx, dy, a, b, x, y, w, h, t;
   long a_square, b_square, two_a_square, two_b_square, four_a_square, four_b_square, d;
 
   #ifdef USE_TRANSLATE
-  if(IsTranslate)TRANSLATE_RECT(x1, y1, x2, y2, CenterX, CenterY);
+  //if(IsTranslate)TRANSLATE_RECT(x1, y1, x2, y2, CenterX, CenterY);
+  // in SetPoint...
   #endif
 
   NORMALIZE_RECT(x1, y1, x2, y2, t);
   #ifdef SKIP_LAST_PIXEL
-  if(IsSLP)y2--; // decrement x2 does LineU automatically
+  if(IsSLP)
+  {
+    x2--;
+    y2--;
+  } // decrement x2 does LineU automatically
   if(x2 < x1 || y2 < y1)return;
   #endif
 
@@ -1453,13 +1458,14 @@ void esDrawElipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char 
 }
 
 // to do: Õ≈ ¬≈—‹  Œƒ - ÃŒ…, –¿«Œ¡–¿“‹—ﬂ\œ≈–≈œ»—¿“‹
-void esFillElipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char Color)
+void esFillEllipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char Color)
 {
   int col, i, row, bnew, dx, dy, a, b, x, y, w, h, t;
   long a_square, b_square, two_a_square, two_b_square, four_a_square, four_b_square, d;
 
   #ifdef USE_TRANSLATE
-  if(IsTranslate)TRANSLATE_RECT(x1, y1, x2, y2, CenterX, CenterY);
+  //if(IsTranslate)TRANSLATE_RECT(x1, y1, x2, y2, CenterX, CenterY);
+  // in DrawLine
   #endif
 
   NORMALIZE_RECT(x1, y1, x2, y2, t);
