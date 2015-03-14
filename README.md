@@ -4,7 +4,7 @@ ESLGL – this is low-end graphics library, optimized to 4-bit and 1-bit per pix
 Library written on “C”, but imitate PLO.
 
 Library supports these operations:
-• BitMap`s
+= BitMap`s =
 
 o esCreateBitMap – Create new BitMap
 
@@ -20,7 +20,7 @@ o esFreeBitMap – Free BitMap
 
 o esFreeStaticBitMap – Free static BitMap
 
-• BitMap effects
+= BitMap effects =
 
 o esCopyBitMap
 
@@ -32,7 +32,7 @@ o esFlipHBitMap
 
 o esRotate90BitMap
 
-• Main graphics
+= Main graphics =
 
 o esClear
 
@@ -50,7 +50,7 @@ o esDrawEllipse
 
 o esFillEllipse
 
-• The BitBlt functions
+= The BitBlt functions =
 
 o 1 - bit
 
@@ -82,7 +82,7 @@ o Universal
 
 ▪ esBitBltRop
 
-• Strech draw functions
+= Strech draw functions =
 
 o 1 – bit
 
