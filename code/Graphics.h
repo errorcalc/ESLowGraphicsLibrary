@@ -1,27 +1,41 @@
 /*******************************************************************************
-**                     ErrorSoftLowGraphicsLibrary v0.8.1                     **
+**                     ErrorSoftLowGraphicsLibrary v1.0                       **
 **         Free using and editing in non commercial project.                  **
 **                                                                            **
-**    errorsoft@protonmail.ch or errorsoft@mail.ru or Enter256@yandex.ru      **
+**             errorsoft@mail.ru or Enter256@yandex.ru                        **
 **                             - for information of use in commerital project **
 **                                                                            **
 ** Supported pixel formats: 1, 2*, 4 bit for pixel.                           **
 ** Supported only little-endian, other in future                              **
 ** * - Support in future                                                      **
 **                                                                            **
-**                          2009-2014 ErrorSoft(c)                            **
+**                          2009-2016 ErrorSoft(c)                            **
 *******************************************************************************/
 
 #ifndef _GRAPHICS_H_
 #define _GRAPHICS_H_
 
-//====== PROPERTIES ========================
-#define USE_SCANLINE_MACRO
-#define USE_PRECALC_SCANLINE
+//******************************************************************************
+// Properties
+//******************************************************************************
+// It allows to move the center coordinates, but a slight drop in performance.
+// see esSetTranslate, esGetTranslate, esSetCenter, esGetCenter, esTranslateCenter
 #define USE_TRANSLATE
-#define USE_SAFE_GRAPHICS
+
+// Drawing mode, which does not draw the last pixel (GDI for sample).
+// see esSetSkipLastPixel, esGetSkipLastPixel
 #define SKIP_LAST_PIXEL
-//==========================================
+
+// Big acceleration for many functions, but increase on memory consumption
+#define USE_PRECALC_SCANLINE
+
+// Small acceleration for many operations
+#define USE_SCANLINE_MACRO
+
+// Enabled please, this is clipping.
+// esSetCheckCoord, esGetCheckCoord
+#define USE_SAFE_GRAPHICS
+//******************************************************************************
 
 #define SWAP(a, b, t)  \
 {  \
@@ -34,8 +48,6 @@
 #define MIN(a, b) (((a)<(b))?(a):(b))
 #define ABS(value) (((value) < 0)?-(value):(value))
 
-//==========================================
-
 #define Scanline1(w)( ( ((w)+7)/8) )
 #define Scanline2(w)( ( ((w)+3)/4) )
 #define Scanline4(w)( ( ((w)+1)/2) )
@@ -47,7 +59,6 @@
 // #define NearRightByte1(x) ((x)/8+1)
 // #define FullBytes1(a, b) (NearRightByte1(a) - NearLeftByte1(b)) 
 
-// FUCKED MAKRO
 // note: if edit this macro then edit esScanlinePF in "Graphics.c"
 #define ES_SCANLINE_PF(Width, pf)                     \
   (((pf == pf1bit)?Scanline1(Width):                   \
@@ -100,9 +111,9 @@
   (y)--; \
 }
 
-//==========================================
+//******************************************************************************
 // Liblary structs and enums
-//==========================================
+//******************************************************************************
 
 #ifndef _DEFINE_GEOMETRY_TYPES_
 #define _DEFINE_GEOMETRY_TYPES_
@@ -172,23 +183,29 @@ typedef struct
   TAlphaFormat AlphaFormat;
   TColor TransparentColor;//todo: add default
   // precalc
+  #ifdef USE_PRECALC_SCANLINE
   int Scanline;
+  #endif 
 } TBitMap, *PBitMap;
 
-//==========================================
+//******************************************************************************
 // Liblary functions
-//==========================================
+//******************************************************************************
 
 // Getters and setters
 void esSetCheckCoord(int _Check);
 int esGetCheckCoord(void);
+#ifdef USE_TRANSLATE
 void esSetTranslate(int _Translate);
 int esGetTranslate(void);
 void esSetCenter(int x, int y);
 void esGetCenter(int *x, int *y);
 void esTranslateCenter(int x, int y);
+#endif
+#ifdef SKIP_LAST_PIXEL
 void esSetSkipLastPixel(int _IsSLP);
 int esGetSkipLastPixel(void);
+#endif
 
 //******************************************************************************
 // Utils
@@ -332,7 +349,7 @@ void esFreeBitMapData(unsigned char *Pixels);
 int esIsCompatibleBitMap(PBitMap Dst, PBitMap Src);
 //---
 PBitMap esCreateBlankBitMap(TPixelFormat pf); 
-PBitMap esCreateBitMap(int Width, int Height, TPixelFormat pf); 
+PBitMap esCreateBitMap(int Width, int Height, TPixelFormat pf);
 PBitMap esCreateBitMapOf(int Width, int Height, TPixelFormat pf, const unsigned char *Pixels); 
 PBitMap esCreateStaticBitMap(int Width, int Height, TPixelFormat pf, const unsigned char *Pixels);
 PBitMap esCreateStaticMaskBitMap(int Width, int Height, TPixelFormat pf, const unsigned char *Pixels,

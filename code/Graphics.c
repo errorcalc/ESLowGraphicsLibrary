@@ -1,15 +1,15 @@
 /*******************************************************************************
-**                     ErrorSoftLowGraphicsLibrary v0.8.1                     **
+**                     ErrorSoftLowGraphicsLibrary v1.0                       **
 **         Free using and editing in non commercial project.                  **
 **                                                                            **
-**    errorsoft@protonmail.ch or errorsoft@mail.ru or Enter256@yandex.ru      **
+**             errorsoft@mail.ru or Enter256@yandex.ru                        **
 **                             - for information of use in commerital project **
 **                                                                            **
 ** Supported pixel formats: 1, 2*, 4 bit for pixel.                           **
 ** Supported only little-endian, other in future                              **
 ** * - Support in future                                                      **
 **                                                                            **
-**                          2009-2014 ErrorSoft(c)                            **
+**                          2009-2016 ErrorSoft(c)                            **
 *******************************************************************************/
 
 #include "Graphics.h"
@@ -18,11 +18,19 @@
 #include "stdlib.h"
 #include "IntMath.h"
 
+#ifndef UNSAFE_SYSTEM_GRAPHICS
 static int IsCheckCoord = 1;// yes
+#endif
+
+#ifdef USE_TRANSLATE
 static int IsTranslate = 0;// no
 static int CenterX = 0;
 static int CenterY = 0;
-static int IsSLP = 0;// no
+#endif
+
+#ifdef SKIP_LAST_PIXEL
+static int IsSLP = 1;// yes
+#endif
 
 //******************************************************************************
 // F**** MACROS
@@ -46,6 +54,7 @@ int esGetCheckCoord(void)
   return IsCheckCoord;
 }
 
+#ifdef USE_TRANSLATE
 void esSetTranslate(int _Translate)
 {
   IsTranslate = _Translate;
@@ -73,7 +82,9 @@ void esTranslateCenter(int x, int y)
   CenterX += x;
   CenterY += y;
 }
+#endif
 
+#ifdef SKIP_LAST_PIXEL
 void esSetSkipLastPixel(int _IsSLP)
 {
   IsSLP = _IsSLP; 
@@ -83,6 +94,7 @@ int esGetSkipLastPixel(void)
 {
   return IsSLP;
 }
+#endif
 
 //******************************************************************************
 // Utils
@@ -111,59 +123,58 @@ int esClipPoint(int w, int h, int *x1, int *y1, int *x2, int *y2)
 {
   if(*x1 < 0 && *x2 >= 0)
   {
-    *y1 = *y1 + (*y2-*y1)/(float)(*x2-*x1) * (float)(0-*x1);
+    *y1 = (int)(*y1 + (*y2-*y1)/(float)(*x2-*x1) * (float)(0-*x1));
     *x1 = 0;
   }
 
   if(*x1 >= w && *x2 < w)
   {
-    *y1 = *y1 + (*y2-*y1)/(float)(*x2-*x1) * (float)(w-*x1-1);
+    *y1 = (int)(*y1 + (*y2-*y1)/(float)(*x2-*x1) * (float)(w-*x1-1));
     *x1 = w-1;
   }
 
   if(*y1 < 0 && *y2 >= 0)
   {
-    *x1 = *x1 + (*x2-*x1)/(float)(*y2-*y1) * (float)(0-*y1);
+    *x1 = (int)(*x1 + (*x2-*x1)/(float)(*y2-*y1) * (float)(0-*y1));
     *y1 = 0;
   }
 
   if(*y1 >= h && *y2 < h)
   {
-    *x1 = *x1 + (*x2-*x1)/(float)(*y2-*y1) * (float)(h-*y1-1);
+    *x1 = (int)(*x1 + (*x2-*x1)/(float)(*y2-*y1) * (float)(h-*y1-1));
     *y1 = h-1;
   }
   return 0;
 }
-// FUCKED MACROS
+
 // x1, y1 - cliped point
 #define ES_CLIP_POINT(w, h, x1, y1, x2, y2)    \
 {                                              \
   if((x1) < 0 && (x2) >= 0)                    \
   {                                            \
-    y1 = ( y1 + (float)(y2-y1)/(float)(x2-x1) * (float)(0-x1) ); \
+    y1 = (int)( y1 + (float)(y2-y1)/(float)(x2-x1) * (float)(0-x1) ); \
     x1 = 0;                                    \
   }                                            \
                                                \
   if(x1 >= w && x2 < w)                        \
   {                                            \
-    y1 = ( y1 + (float)(y2-y1)/(float)(x2-x1) * (float)(w-x1-1) ); \
+    y1 = (int)( y1 + (float)(y2-y1)/(float)(x2-x1) * (float)(w-x1-1) ); \
     x1 = w-1;                                  \
   }                                            \
                                                \
   if(y1 < 0 && y2 >= 0)                        \
   {                                            \
-    x1 = ( x1 + (float)(x2-x1)/(float)(y2-y1) * (float)(0-y1) ); \
+    x1 = (int)( x1 + (float)(x2-x1)/(float)(y2-y1) * (float)(0-y1) ); \
     y1 = 0;                                    \
   }                                            \
                                                \
   if(y1 >= h && y2 < h)                        \
   {                                            \
-    x1 = ( x1 + (float)(x2-x1)/(float)(y2-y1) * (float)(h-y1-1) ); \
+    x1 = (int)( x1 + (float)(x2-x1)/(float)(y2-y1) * (float)(h-y1-1) ); \
     y1 = h-1;                                  \
   }                                            \
 } 
 
-// to do: govnocode
 // return:
 // -1: no cliped
 // 0: all cliped
@@ -230,6 +241,8 @@ unsigned char esFillByte(TColor Color, TPixelFormat pf)
       return (Color&0x0F)|((Color<<4)&0xF0); 
     default:;
   }  
+
+  return 0;// for compiler paranoia 
 }
 
 // to do: test
@@ -526,7 +539,6 @@ void esSetPixel2(PBitMap BitMap, int x, int y, TColor color)
 }
 
 // Need refactor
-// test
 TColor esGetPixel2(PBitMap BitMap, int x, int y)
 {
   unsigned char b;
@@ -550,6 +562,8 @@ TColor esGetPixel2(PBitMap BitMap, int x, int y)
     case 2: return (b>>1)&0x03;
     case 3: return (b>>0)&0x03;
   }
+
+  return 0;// for compiler paranoia 
 }
 
 // 4 bit pf
@@ -695,7 +709,6 @@ TColor esGetPixel1(PBitMap BitMap, int x, int y)
 */
 
 // Need refactor
-// test
 TColor esGetPixel4(PBitMap BitMap, int x, int y)
 {
   unsigned char b;
@@ -717,6 +730,8 @@ TColor esGetPixel4(PBitMap BitMap, int x, int y)
     case 0: return (b>>4)&0x0F;
     case 1: return (b>>0)&0x0F;
   }
+
+  return 0;// for compiler paranoia
 }
 
 void esFillPixels(unsigned char *pStart, unsigned char *pEnd, TColor Color)
@@ -1040,12 +1055,17 @@ TColor esGetPixel(PBitMap BitMap, int x, int y)
       
     case pf4bit:
       return esGetPixel4(BitMap, x, y);
-  }  
+  } 
+
+  return 0;// for compiler paranoia 
 }
 
 void esFillRect(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
 {
-  int y, t;
+  int y;
+  #ifdef USE_SAFE_GRAPHICS 
+  int t;
+  #endif
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(x1, y1, x2, y2, CenterX, CenterY);
@@ -1086,10 +1106,11 @@ void esFillRect(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
   } 
 }
 
-// SUPER GOVNOKODE FIX ME PLEASE!!!!!!!!!!!!!!!!!
 void esDrawRect(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
 {
+  #ifdef USE_SAFE_GRAPHICS 
   int t;
+  #endif
   int IsTop = 1, IsBottom = 1, IsLeft, IsRight;
   int ty1, ty2, tx1, tx2;
 
@@ -1351,10 +1372,10 @@ long a_square,b_square,two_a_square,two_b_square,four_a_square,four_b_square,d;
 }*/
 
 
-// to do: ÍÅ ÂÅÑÜ ÊÎÄ - ÌÎÉ, ÐÀÇÎÁÐÀÒÜÑß\ÏÅÐÅÏÈÑÀÒÜ
+// to do: research
 void esDrawEllipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char Color)
 {
-  int col, i, row, bnew, dx, dy, a, b, x, y, w, h, t;
+  int col, row, dx, dy, a, b, x, y, w, h, t;
   long a_square, b_square, two_a_square, two_b_square, four_a_square, four_b_square, d;
 
   #ifdef USE_TRANSLATE
@@ -1457,10 +1478,10 @@ void esDrawEllipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char
   }
 }
 
-// to do: ÍÅ ÂÅÑÜ ÊÎÄ - ÌÎÉ, ÐÀÇÎÁÐÀÒÜÑß\ÏÅÐÅÏÈÑÀÒÜ
+// to do: research
 void esFillEllipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned char Color)
 {
-  int col, i, row, bnew, dx, dy, a, b, x, y, w, h, t;
+  int col, row, dx, dy, a, b, x, y, w, h, t;
   long a_square, b_square, two_a_square, two_b_square, four_a_square, four_b_square, d;
 
   #ifdef USE_TRANSLATE
@@ -1725,7 +1746,7 @@ void nnesDrawCircle(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned cha
 //
 // todo: refactoring!!!
 // 14.01.2008
-// Ãîâíîêîä, êîòîðûé ÿ ñàì ïëîõî ïîíèìàþ,
+// Êîä, êîòîðûé ÿ ñàì ïëîõî ïîíèìàþ,
 // ÷åðåç ïîëãîäà ÿ óæå íå âñïîìíþ êàê îíî ðàáîòàåò.
 // |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
 // |               |               |               |
@@ -1760,7 +1781,7 @@ const unsigned char LPixels01[] =
 };
 
 /*
-// GOLG, 100% worked
+// GOLD, 100% worked
 int esBitBlt01_Copy(PBitMap Dst, int x, int y, PBitMap Src)
 {
   int DstScan, SrcScan, sy, ix, iy;
@@ -1866,13 +1887,13 @@ int esBitBlt01_Copy(PBitMap Dst, int x, int y, PBitMap Src)
 }
 */
 
-// GOLG, 100% worked
+// GOLD, 100% worked
 int esBitBlt01_Copy(PBitMap Dst, int x, int y, PBitMap Src)
 {
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, EndOffset, NormalDraw;
-  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, d, s, m;
+  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, s;
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
@@ -1989,13 +2010,12 @@ int esBitBlt01_Copy(PBitMap Dst, int x, int y, PBitMap Src)
   return 1;
 }
 
-
 int esBitBlt01_Or(PBitMap Dst, int x, int y, PBitMap Src)
 {
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, EndOffset, NormalDraw;
-  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, d, s, m;
+  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, s;
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
@@ -2117,7 +2137,7 @@ int esBitBlt01_And(PBitMap Dst, int x, int y, PBitMap Src)
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, EndOffset, NormalDraw;
-  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, d, s, m;
+  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, s;
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
@@ -2235,13 +2255,13 @@ int esBitBlt01_And(PBitMap Dst, int x, int y, PBitMap Src)
 }
 
 
-// to do: fix me: ÏÅÐÅÄÅËÀÒÜ ÂÑÅ Ê ×ÅÐÒßÌ, ß ÍÀÑÒÀÂÈË ÊÎÑÒÛËÅÉ, ÐÀÇÎÁÐÀÒÜÑß
+// to do: fix me: research
 int esBitBlt01_NotAnd(PBitMap Dst, int x, int y, PBitMap Src)
 {
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, EndOffset, NormalDraw;
-  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, d, s, m;
+  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, s;
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
@@ -2363,7 +2383,7 @@ int esBitBlt01_Xor(PBitMap Dst, int x, int y, PBitMap Src)
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, EndOffset, NormalDraw;
-  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, d, s, m;
+  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, s;
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
@@ -2480,13 +2500,13 @@ int esBitBlt01_Xor(PBitMap Dst, int x, int y, PBitMap Src)
   return 1;
 }
 
-// GOLG, 100% worked
+// GOLD, 100% worked
 int esBitBlt01_MaskData(PBitMap Dst, int x, int y, PBitMap Src, unsigned char *MaskData)
 {
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, EndOffset, NormalDraw;
-  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, *pMask, *pMaskLine, m, s, d;
+  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, *pMask, *pMaskLine, m, s;
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
@@ -2623,13 +2643,13 @@ int esBitBlt01_Mask(PBitMap Dst, int x, int y, PBitMap Src)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// GOLG, 100% worked
+// GOLD, 100% worked
 int esBitBlt04_Copy(PBitMap Dst, int x, int y, PBitMap Src)
 {
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, IsLeftParticle, IsRightParticle;
-  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, d, s, m;
+  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, s;
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
@@ -2731,13 +2751,13 @@ int esBitBlt04_Copy(PBitMap Dst, int x, int y, PBitMap Src)
   return 1;
 }
 
-// GOLG, 100% worked
+// GOLD, 100% worked
 int esBitBlt04_Or(PBitMap Dst, int x, int y, PBitMap Src)
 {
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, IsLeftParticle, IsRightParticle;
-  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, d, s, m;
+  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, s;
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
@@ -2839,13 +2859,13 @@ int esBitBlt04_Or(PBitMap Dst, int x, int y, PBitMap Src)
   return 1;
 }
 
-// GOLG, 100% worked
+// GOLD, 100% worked
 int esBitBlt04_Xor(PBitMap Dst, int x, int y, PBitMap Src)
 {
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, IsLeftParticle, IsRightParticle;
-  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, d, s, m;
+  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, s;
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
@@ -2948,13 +2968,13 @@ int esBitBlt04_Xor(PBitMap Dst, int x, int y, PBitMap Src)
 }
 
 
-// GOLG, 100% worked
+// GOLD, 100% worked
 int esBitBlt04_And(PBitMap Dst, int x, int y, PBitMap Src)
 {
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, IsLeftParticle, IsRightParticle;
-  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, d, s, m;
+  unsigned char *pSrc, *pSrcLine, *pDst, *pDstLine, *pDstEnd, s;
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
@@ -3056,13 +3076,13 @@ int esBitBlt04_And(PBitMap Dst, int x, int y, PBitMap Src)
   return 1;
 }
 
-// GOLG, 100% worked
+// GOLD, 100% worked
 int esBitBlt04_MaskData(PBitMap Dst, int x, int y, PBitMap Src, unsigned char *MaskData)
 {
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, IsLeftParticle, IsRightParticle;
-  unsigned char *pSrc,*pSrcLine, *pDst, *pDstLine, *pDstEnd, d, s, m;
+  unsigned char *pSrc,*pSrcLine, *pDst, *pDstLine, *pDstEnd, s, m;
   unsigned char *pMask, *pMaskLine;
 
   #ifdef USE_TRANSLATE
@@ -3182,13 +3202,13 @@ int esBitBlt04_Mask(PBitMap Dst, int x, int y, PBitMap Src)
   return esBitBlt04_MaskData(Dst, x, y, Src, Src->Mask);
 }
 
-// GOLG, 100% worked
+// GOLD, 100% worked
 int esBitBlt04_Transparent(PBitMap Dst, int x, int y, PBitMap Src)
 {
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, IsLeftParticle, IsRightParticle;
-  unsigned char *pSrc,*pSrcLine, *pDst, *pDstLine, *pDstEnd, d, s, m;
+  unsigned char *pSrc,*pSrcLine, *pDst, *pDstLine, *pDstEnd, s, m;
   unsigned char Transp, TranspShift, TranspFill;
 
   #ifdef USE_TRANSLATE
@@ -3316,13 +3336,13 @@ int esBitBlt04_Transparent(PBitMap Dst, int x, int y, PBitMap Src)
   return 1;
 }
 
-// GOLG, 100% worked
+// GOLD, 100% worked
 int esBitBlt04_Color(PBitMap Dst, int x, int y, PBitMap Src, TColor Color)
 {
   int DstScan, SrcScan, sy, ix, iy;
   int Start_y, End_y, Start_x, End_x;
   int Offset, IsLeftParticle, IsRightParticle;
-  unsigned char *pSrc,*pSrcLine, *pDst, *pDstLine, *pDstEnd, d, s, FillColor;
+  unsigned char *pSrc,*pSrcLine, *pDst, *pDstLine, *pDstEnd, s, FillColor;
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
@@ -3451,6 +3471,8 @@ int esBitBlt01(PBitMap Dst, int x, int y, PBitMap Src)
     case afColor:
       return 0; 
   }
+
+  return 0;// for compiler paranoia 
 }
 
 int esBitBlt04(PBitMap Dst, int x, int y, PBitMap Src)
@@ -3469,6 +3491,8 @@ int esBitBlt04(PBitMap Dst, int x, int y, PBitMap Src)
     case afColor:
       return esBitBlt04_Transparent(Dst, x, y, Src);
   }
+
+  return 0;// for compiler paranoia 
 }
 
 // to do: add pixel formats
@@ -3484,6 +3508,8 @@ int esBitBlt(PBitMap Dst, int x, int y, PBitMap Src)
     case pfC2:
       return 0;
   }
+
+  return 0;// for compiler paranoia 
 }
 
 int esBitBltRop01(PBitMap Dst, int x, int y, PBitMap Src, TRop Rop)
@@ -3501,6 +3527,8 @@ int esBitBltRop01(PBitMap Dst, int x, int y, PBitMap Src, TRop Rop)
     case ropNotAnd:
       return esBitBlt01_NotAnd(Dst, x, y, Src);
   }
+
+  return 0;// for compiler paranoia 
 }
 
 int esBitBltRop04(PBitMap Dst, int x, int y, PBitMap Src, TRop Rop)
@@ -3516,6 +3544,8 @@ int esBitBltRop04(PBitMap Dst, int x, int y, PBitMap Src, TRop Rop)
     case ropAnd:
       return esBitBlt04_And(Dst, x, y, Src);
   }
+
+  return 0;// for compiler paranoia 
 }
 
 // to do: add pixel formats
@@ -3531,6 +3561,8 @@ int esBitBltRop(PBitMap Dst, int x, int y, PBitMap Src, TRop Rop)
     case pfC2:
       return 0;
   }
+
+  return 0;// for compiler paranoia 
 }
 
 
@@ -3629,7 +3661,6 @@ void esStrechDraw01_Copy(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 {
   unsigned char Color;
   int sx, sy, t;
-  int w, h;
   fixed dx, dy, x, y, start_x;
 
   #ifdef USE_TRANSLATE
@@ -3672,7 +3703,6 @@ void esStrechDraw01_Or(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 {
   unsigned char Color;
   int sx, sy, t;
-  int w, h;
   fixed dx, dy, x, y, start_x;
 
   #ifdef USE_TRANSLATE
@@ -3715,7 +3745,6 @@ void esStrechDraw01_Xor(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 {
   unsigned char Color;
   int sx, sy, t;
-  int w, h;
   fixed dx, dy, x, y, start_x;
 
   #ifdef USE_TRANSLATE
@@ -3758,7 +3787,6 @@ void esStrechDraw01_And(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 {
   unsigned char Color;
   int sx, sy, t;
-  int w, h;
   fixed dx, dy, x, y, start_x;
 
   #ifdef USE_TRANSLATE
@@ -3801,7 +3829,7 @@ void esStrechDraw01_Mask(PBitMap Dst, TRect d, PBitMap Src, TRect s, PBitMap Mas
 {
   unsigned char Color;
   int sx, sy, t;
-  int w, h, ix, iy;
+  int ix, iy;
   fixed dx, dy, x, y, start_x;
 
   #ifdef USE_TRANSLATE
@@ -3849,7 +3877,6 @@ void esStrechDraw04_Copy(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 {
   unsigned char Color;
   int sx, sy, t;
-  int w, h;
   fixed dx, dy, x, y, start_x;
 
   #ifdef USE_TRANSLATE
@@ -3892,7 +3919,6 @@ void esStrechDraw04_Or(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 {
   unsigned char Color;
   int sx, sy, t;
-  int w, h;
   fixed dx, dy, x, y, start_x;
 
   #ifdef USE_TRANSLATE
@@ -3935,7 +3961,6 @@ void esStrechDraw04_Xor(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 {
   unsigned char Color;
   int sx, sy, t;
-  int w, h;
   fixed dx, dy, x, y, start_x;
 
   #ifdef USE_TRANSLATE
@@ -3978,7 +4003,6 @@ void esStrechDraw04_And(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 {
   unsigned char Color;
   int sx, sy, t;
-  int w, h;
   fixed dx, dy, x, y, start_x;
 
   #ifdef USE_TRANSLATE
@@ -4021,7 +4045,7 @@ void esStrechDraw04_Mask(PBitMap Dst, TRect d, PBitMap Src, TRect s, PBitMap Mas
 {
   unsigned char Color;
   int sx, sy, t;
-  int w, h, ix, iy;
+  int ix, iy;
   fixed dx, dy, x, y, start_x;
 
   #ifdef USE_TRANSLATE
@@ -4070,7 +4094,7 @@ void esStrechDraw04_Transparent(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 {
   unsigned char Color, Transp;
   int sx, sy, t;
-  int w, h, ix, iy;
+  int ix, iy;
   fixed dx, dy, x, y, start_x;
 
   #ifdef USE_TRANSLATE
@@ -4118,9 +4142,9 @@ void esStrechDraw04_Transparent(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
 void esStrechDraw04_Color(PBitMap Dst, TRect d, PBitMap Src, TRect s, TColor FillColor)
 {
-  unsigned char Color, Mix, DstColor, SrcColor;
+  unsigned char Mix, DstColor, SrcColor;
   int sx, sy, t;
-  int w, h, ix, iy;
+  int ix, iy;
   fixed dx, dy, x, y, start_x;
 
   #ifdef USE_TRANSLATE
@@ -4170,7 +4194,6 @@ void esStrechDraw04_Color(PBitMap Dst, TRect d, PBitMap Src, TRect s, TColor Fil
 int esStrechDraw01(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 {
   TBitMap Mask;
-  TAlphaFormat t;
 
   switch(Src->AlphaFormat)
   {
@@ -4192,13 +4215,14 @@ int esStrechDraw01(PBitMap Dst, TRect d, PBitMap Src, TRect s)
     case afColor:
       return 0; 
   }
+
+  return 0;// for compiler paranoia
 }
 
 // to do: Add return`s error
 int esStrechDraw04(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 {
   TBitMap Mask;
-  TAlphaFormat t;
 
   switch(Src->AlphaFormat)
   {
@@ -4221,6 +4245,8 @@ int esStrechDraw04(PBitMap Dst, TRect d, PBitMap Src, TRect s)
       esStrechDraw04_Transparent(Dst, d, Src, s);
       return 1; 
   }
+
+  return 0;// for compiler paranoia 
 }
 
 // to do: add pixel formats
@@ -4236,6 +4262,8 @@ int esStrechDraw(PBitMap Dst, TRect d, PBitMap Src, TRect s)
     case pfC2:
       return 0;
   }
+
+  return 0;// for compiler paranoia 
 }
 
 // to do: Add return`s error
@@ -4295,6 +4323,8 @@ int esStrechDrawRop(PBitMap Dst, TRect d, PBitMap Src, TRect s, TRop Rop)
     case pfC2:
       return 0;
   }
+
+  return 0;// for compiler paranoia 
 }
 
 // Align

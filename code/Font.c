@@ -1,6 +1,7 @@
 #include "stdlib.h"
 #include "Graphics.h"
 #include "Font.h"
+#include "string.h"
 
 // monospace font:
 //  ...
@@ -37,7 +38,7 @@ int esDrawSymbol01(PBitMap Dst, int x, int y, unsigned char S, PFont Font)
     return 0;
 
   BitMap->Pixels = FontData + SymbolSize * S;
-  
+
   switch(Font->Mode)
   {
     case 0:
@@ -109,7 +110,7 @@ int esDrawTextEx(PBitMap Dst, int x, int y, const char *Text)
   int i = 0;
   int IsDraw = 0;
 
-  if(x >= Dst->Width || y >= Dst->Height || y <= -ActiveFont->Height)
+  if(x >= Dst->Width || y >= Dst->Height || y <= -ActiveFont->Height || Text == NULL)
     return 0;
 
   if(x <= -ActiveFont->Width)
@@ -191,7 +192,7 @@ int esDrawText(PBitMap Dst, int x, int y, const char *Text, TColor Color)
   int i = 0;
   int IsDraw = 0;
 
-  if(x >= Dst->Width || y >= Dst->Height || y <= -ActiveFont->Height)
+  if(x >= Dst->Width || y >= Dst->Height || y <= -ActiveFont->Height || Text == NULL)
     return 0;
 
   if(x <= -ActiveFont->Width)
@@ -224,6 +225,24 @@ int esDrawText(PBitMap Dst, int x, int y, const char *Text, TColor Color)
   return IsDraw;
 }
 
+
+int esGetTextHeight(PBitMap Dst, const char *Text)
+{
+  if(ActiveFont != NULL && Text != NULL)
+  {
+    return ActiveFont->Height;
+  }
+  return -1;
+}
+
+int esGetTextWidth(PBitMap Dst, const char *Text)
+{
+  if(ActiveFont != NULL && Text != NULL)
+  {
+    return ActiveFont->Width * strlen(Text);
+  }
+  return -1;
+}
 
 PFont esCreateMonospaceFont(int Width, int Height, TPixelFormat pf, const unsigned char *FontData)
 {

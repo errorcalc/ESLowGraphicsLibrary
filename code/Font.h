@@ -40,6 +40,9 @@ int esDrawSymbol04_Copy(PBitMap Dst, int x, int y, unsigned char S);
 int esDrawTextEx(PBitMap Dst, int x, int y, const char *Text);
 int esDrawText(PBitMap Dst, int x, int y, const char *Text, TColor Color);
 
+int esGetTextHeight(PBitMap Dst, const char *Text);
+int esGetTextWidth(PBitMap Dst, const char *Text);
+
 PFont esCreateMonospaceFont(int Width, int Height, TPixelFormat pf, const unsigned char *FontData);
 PFont esFreeFont(PFont Font);
 

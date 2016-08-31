@@ -48,6 +48,8 @@ void SampleMain(void)
   TRect LogoRect, Rect;
   float t;
   int x, y, s;
+
+  esSetSkipLastPixel(0);
  
   BitMap = esCreateBitMap(SysGetScreenWidth(), SysGetScreenHeight(), SysGetPixelFormat()); 
   Logo = esCreateStaticBitMap(111, 25, pf1bit, Logo_data);
