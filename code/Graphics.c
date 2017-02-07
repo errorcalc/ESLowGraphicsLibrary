@@ -9,7 +9,7 @@
 ** Supported only little-endian, other in future                              **
 ** * - Support in future                                                      **
 **                                                                            **
-**                          2009-2016 ErrorSoft(c)                            **
+**                          2009-2017 ErrorSoft(c)                            **
 *******************************************************************************/
 
 #include "Graphics.h"
@@ -87,7 +87,7 @@ void esTranslateCenter(int x, int y)
 #ifdef SKIP_LAST_PIXEL
 void esSetSkipLastPixel(int _IsSLP)
 {
-  IsSLP = _IsSLP; 
+  IsSLP = _IsSLP;
 }
 
 int esGetSkipLastPixel(void)
@@ -101,7 +101,7 @@ int esGetSkipLastPixel(void)
 //******************************************************************************
 
 
-// is entry segments 
+// is entry segments
 int esIsEntrySeg(int a1, int a2, int b1, int b2)
 {
   // a1 ---|--- a2
@@ -116,7 +116,7 @@ int esIsEntrySeg(int a1, int a2, int b1, int b2)
 //     \-----------      |   x2, y2
 //        |        \--------
 //        +--------------+
-//  f(x) = f(x0) + (f(x1)-f(x0))/(x1-x0) * (x-x0)       
+//  f(x) = f(x0) + (f(x1)-f(x0))/(x1-x0) * (x-x0)
 //
 // x1, y1 - cliped point
 int esClipPoint(int w, int h, int *x1, int *y1, int *x2, int *y2)
@@ -173,7 +173,7 @@ int esClipPoint(int w, int h, int *x1, int *y1, int *x2, int *y2)
     x1 = (int)( x1 + (float)(x2-x1)/(float)(y2-y1) * (float)(h-y1-1) ); \
     y1 = h-1;                                  \
   }                                            \
-} 
+}
 
 // return:
 // -1: no cliped
@@ -236,13 +236,13 @@ unsigned char esFillByte(TColor Color, TPixelFormat pf)
         case 3:
           return 0xFF;
       }
-      
-    case pf4bit:
-      return (Color&0x0F)|((Color<<4)&0xF0); 
-    default:;
-  }  
 
-  return 0;// for compiler paranoia 
+    case pf4bit:
+      return (Color&0x0F)|((Color<<4)&0xF0);
+    default:;
+  }
+
+  return 0;// for compiler paranoia
 }
 
 // to do: test
@@ -257,10 +257,10 @@ int esIsRealColor(TColor Color, TPixelFormat pf)
     case pf2bit:;
     case pfC2:
       if(Color > 3)isReal = 0;
-      break; 
+      break;
     case pf4bit:
       if(Color > 15)isReal = 0;
-      break;    
+      break;
   }
   return isReal;
 }
@@ -275,7 +275,7 @@ int esScanlinePF(int Width, TPixelFormat pf)
       return Scanline1(Width);
     case pf2bit:;
     case pfC2:
-      return Scanline2(Width);    
+      return Scanline2(Width);
     case pf4bit:
       return Scanline4(Width);
   }
@@ -290,12 +290,12 @@ int esScanline(PBitMap BitMap)
 TRect esGetBitMapRect(PBitMap BitMap)
 {
   TRect R;
-  
+
   R.x1 = 0;
   R.y1 = 0;
   R.x2 = BitMap->Width;
   R.y2 = BitMap->Height;
-  
+
   return R;
 }
 
@@ -307,7 +307,7 @@ int esPFToBitCount(TPixelFormat pf)
       return 1;
     case pf2bit:;
     case pfC2:
-      return 2;    
+      return 2;
     case pf4bit:
       return 4;
     default:
@@ -322,10 +322,10 @@ TPixelFormat esBitCountToPF(int Count)
     case 1:
       return pf1bit;
     case 2:
-      return pf2bit;    
+      return pf2bit;
     case 4:
       return pf4bit;
-    default: 
+    default:
       return pfUnsupport;
   }
 }
@@ -342,7 +342,7 @@ void esSetPixel1(PBitMap BitMap, int x, int y, TColor color)
 {
   const unsigned char byte[] = { 128, 64, 32, 16, 8, 4, 2, 1};
   unsigned char *Pointer;
- 
+
   #ifndef UNSAFE_SYSTEM_GRAPHICS
   if(IsCheckCoord)
     if(x < 0 || x >= BitMap->Width || y < 0 || y >= BitMap->Height)return;
@@ -371,7 +371,7 @@ void esSetPixel1(PBitMap BitMap, int x, int y, TColor color)
         case 6: *Pointer &= 0xFD; break;
         case 7: *Pointer &= 0xFE; break;
       }
-      break;   
+      break;
     case 1:
       switch(x%8)
       {
@@ -397,7 +397,7 @@ void esSetPixel1(PBitMap BitMap, int x, int y, TColor color)
         case 6: *Pointer ^= 2; break;
         case 7: *Pointer ^= 1; break;
       }
-      break; 
+      break;
   }
 }
 */
@@ -407,7 +407,7 @@ void esSetPixel1(PBitMap BitMap, int x, int y, TColor color)
 {
   //const unsigned char byte[] = { 128, 64, 32, 16, 8, 4, 2, 1};
   unsigned char *p;
- 
+
   #ifndef UNSAFE_SYSTEM_GRAPHICS
   if(IsCheckCoord)
     if(x < 0 || x >= BitMap->Width || y < 0 || y >= BitMap->Height)return;
@@ -426,13 +426,13 @@ void esSetPixel1(PBitMap BitMap, int x, int y, TColor color)
   {
     case 0:
       *p &= ~(0x80 >> (x%8));
-      break;   
+      break;
     case 1:
       *p |= (0x80 >> (x%8));
       break;
     case 2:
       *p ^= (0x80 >> (x%8));
-      break; 
+      break;
   }
 }
 
@@ -441,7 +441,7 @@ void esDrawPixel1_Or(PBitMap BitMap, int x, int y, TColor color)
 {
   //const unsigned char byte[] = { 128, 64, 32, 16, 8, 4, 2, 1};
   unsigned char *p;
- 
+
   #ifndef UNSAFE_SYSTEM_GRAPHICS
   if(IsCheckCoord)
     if(x < 0 || x >= BitMap->Width || y < 0 || y >= BitMap->Height)return;
@@ -461,7 +461,7 @@ void esDrawPixel1_Xor(PBitMap BitMap, int x, int y, TColor color)
 {
   //const unsigned char byte[] = { 128, 64, 32, 16, 8, 4, 2, 1};
   unsigned char *p;
- 
+
   #ifndef UNSAFE_SYSTEM_GRAPHICS
   if(IsCheckCoord)
     if(x < 0 || x >= BitMap->Width || y < 0 || y >= BitMap->Height)return;
@@ -474,14 +474,14 @@ void esDrawPixel1_Xor(PBitMap BitMap, int x, int y, TColor color)
   #endif
 
   *p ^= color << (7 - x%8);
-} 
+}
 
 // Need refactor !!!!!!!!!
 void esDrawPixel1_And(PBitMap BitMap, int x, int y, TColor color)
 {
   //const unsigned char byte[] = { 128, 64, 32, 16, 8, 4, 2, 1};
   unsigned char *p;
- 
+
   #ifndef UNSAFE_SYSTEM_GRAPHICS
   if(IsCheckCoord)
     if(x < 0 || x >= BitMap->Width || y < 0 || y >= BitMap->Height)return;
@@ -500,7 +500,7 @@ void esDrawPixel1_And(PBitMap BitMap, int x, int y, TColor color)
 TColor esGetPixel1(PBitMap BitMap, int x, int y)
 {
   unsigned char b;
- 
+
   #ifndef UNSAFE_SYSTEM_GRAPHICS
   if(IsCheckCoord)
     if(x < 0 || x >= BitMap->Width || y < 0 || y >= BitMap->Height)return 0;
@@ -522,13 +522,13 @@ void esSetPixel2(PBitMap BitMap, int x, int y, TColor color)
   if(IsCheckCoord)
     if(x < 0 || x >= BitMap->Width || y < 0 || y >= BitMap->Height)return;
   #endif
-  
+
   #ifdef USE_PRECALC_SCANLINE
   Pixel = BitMap->Pixels + BitMap->Scanline*y + (x>>2);
   #else
   Pixel = BitMap->Pixels + Scanline2(BitMap->Width)*y + (x>>2);
   #endif
-  
+
   switch(x%4)
   {
     case 0: *Pixel = (*Pixel & 0x3F)|(color<<6); break;
@@ -542,7 +542,7 @@ void esSetPixel2(PBitMap BitMap, int x, int y, TColor color)
 TColor esGetPixel2(PBitMap BitMap, int x, int y)
 {
   unsigned char b;
- 
+
   #ifndef UNSAFE_SYSTEM_GRAPHICS
   if(IsCheckCoord)
     if(x < 0 || x >= BitMap->Width || y < 0 || y >= BitMap->Height)return 0;
@@ -563,7 +563,7 @@ TColor esGetPixel2(PBitMap BitMap, int x, int y)
     case 3: return (b>>0)&0x03;
   }
 
-  return 0;// for compiler paranoia 
+  return 0;// for compiler paranoia
 }
 
 // 4 bit pf
@@ -683,7 +683,7 @@ void esDrawPixel4_Xor(PBitMap BitMap, int x, int y, TColor color)
 TColor esGetPixel1(PBitMap BitMap, int x, int y)
 {
   unsigned char b;
- 
+
   #ifndef UNSAFE_SYSTEM_GRAPHICS
   if(IsCheckCoord)
     if(x < 0 || x >= BitMap->Width || y < 0 || y >= BitMap->Height)return 0;
@@ -712,7 +712,7 @@ TColor esGetPixel1(PBitMap BitMap, int x, int y)
 TColor esGetPixel4(PBitMap BitMap, int x, int y)
 {
   unsigned char b;
- 
+
   #ifndef UNSAFE_SYSTEM_GRAPHICS
   if(IsCheckCoord)
     if(x < 0 || x >= BitMap->Width || y < 0 || y >= BitMap->Height)return 0;
@@ -748,21 +748,21 @@ void esDrawHLine1(PBitMap BitMap, int x1, int x2, int y, TColor Color)
   int x, t;
   unsigned char *scanline, *p, *pEnd;
   unsigned char b;
-   
+
   if(x1 > x2)SWAP(x1, x2, t);
-  
+
   if(esIsRealColor(Color, BitMap->PixelFormat) && x2 - x1 > 7)
   {
     // ...->|
     for(; x1%8; x1++)
       esSetPixel1(BitMap, x1, y, Color);
-    // |<-...    
+    // |<-...
     for(; (x2+1)%8; x2--)
-      esSetPixel1(BitMap, x2, y, Color); 
-      
-    // bytes draw   
-    b = esFillByte(Color, BitMap->PixelFormat);// set color to byte    
-    
+      esSetPixel1(BitMap, x2, y, Color);
+
+    // bytes draw
+    b = esFillByte(Color, BitMap->PixelFormat);// set color to byte
+
     #ifdef USE_PRECALC_SCANLINE
     scanline = BitMap->Scanline*y + BitMap->Pixels;
     #else
@@ -771,14 +771,14 @@ void esDrawHLine1(PBitMap BitMap, int x1, int x2, int y, TColor Color)
 
     p = scanline + x1/8;
     pEnd = scanline + (x2+1)/8;
-    
+
     while(p < pEnd)
       *(p++) = b;
   }else
   {
     for(x = x1; x <= x2; x++)
-      esSetPixel1(BitMap, x, y, Color);  
-  } 
+      esSetPixel1(BitMap, x, y, Color);
+  }
 }
 
 // UnSafe
@@ -787,37 +787,37 @@ void esDrawHLine2(PBitMap BitMap, int x1, int x2, int y, TColor Color)
   int x, t;
   unsigned char *scanline, *p, *pEnd;
   unsigned char b;
-   
+
   if(x1 > x2)SWAP(x1, x2, t);
   if(esIsRealColor(Color, BitMap->PixelFormat) && x2 - x1 > 3)
   {
     // ...->|
     for(; x1%4; x1++)
       esSetPixel2(BitMap, x1, y, Color);
-    // |<-...    
+    // |<-...
     for(; (x2+1)%4; x2--)
-      esSetPixel2(BitMap, x2, y, Color); 
-      
-    // bytes draw   
-    b = esFillByte(Color, BitMap->PixelFormat);// set color to byte    
-    
+      esSetPixel2(BitMap, x2, y, Color);
+
+    // bytes draw
+    b = esFillByte(Color, BitMap->PixelFormat);// set color to byte
+
     #ifdef USE_PRECALC_SCANLINE
     scanline = BitMap->Scanline*y + BitMap->Pixels;
     #else
-    scanline = esScanlinePF(BitMap->Width, BitMap->PixelFormat)*y 
+    scanline = esScanlinePF(BitMap->Width, BitMap->PixelFormat)*y
       + BitMap->Pixels;
     #endif
-    
+
     p = scanline + x1/4;//(x1-1)/4 + 1;
     pEnd = scanline + (x2+1)/4;//(x2+1)/4;
-    
+
     while(p < pEnd)
       *(p++) = b;
   }else
   {
     for(x = x1; x <= x2; x++)
-      esSetPixel2(BitMap, x, y, Color);  
-  } 
+      esSetPixel2(BitMap, x, y, Color);
+  }
 }
 
 // UnSafe
@@ -826,18 +826,18 @@ void esDrawHLine4(PBitMap BitMap, int x1, int x2, int y, TColor Color)
   int x, t;
   unsigned char *scanline, *p, *pEnd;
   unsigned char b;
-   
+
   if(x1 > x2)SWAP(x1, x2, t);
   if(esIsRealColor(Color, BitMap->PixelFormat) && x2 - x1 > 1)
   {
     // ...->|
     for(; x1%2; x1++)
       esSetPixel4(BitMap, x1, y, Color);
-    // |<-...    
+    // |<-...
     for(; (x2+1)%2; x2--)
-      esSetPixel4(BitMap, x2, y, Color); 
-      
-    // bytes draw   
+      esSetPixel4(BitMap, x2, y, Color);
+
+    // bytes draw
     b = esFillByte(Color, BitMap->PixelFormat);// set color to byte
 
     #ifdef USE_PRECALC_SCANLINE
@@ -848,14 +848,14 @@ void esDrawHLine4(PBitMap BitMap, int x1, int x2, int y, TColor Color)
 
     p = scanline + x1/2;
     pEnd = scanline + (x2+1)/2;
-    
+
     while(p < pEnd)
       *(p++) = b;
   }else
   {
     for(x = x1; x <= x2; x++)
-      esSetPixel4(BitMap, x, y, Color);  
-  } 
+      esSetPixel4(BitMap, x, y, Color);
+  }
 }
 
 // UnSafe
@@ -885,7 +885,7 @@ void esDrawVLine(PBitMap BitMap, int y1, int y2, int x, TColor Color)
 {
   unsigned char *p, b, bc, bn;
   int scanline, y, t;
-  
+
   if(y1 > y2)
     SWAP(y1, y2, t);
 
@@ -894,13 +894,13 @@ void esDrawVLine(PBitMap BitMap, int y1, int y2, int x, TColor Color)
   //if(y2 >= BitMap->Height)y2 = BitMap->Height - 1;// to do: fix me: ÂÐÅÌÅÍÍÀß ÇÀÏËÀÒÊÀ ×ÒÎÁÛ DrawRect ÍÅ ÏÎÃÀÍÈË ÊÓ×Ó!!!!!!!!!!!!!!!!!
 
   if(esIsRealColor(Color, BitMap->PixelFormat))
-  { 
+  {
     #ifdef USE_PRECALC_SCANLINE
     scanline = BitMap->Scanline;
     #else
     scanline = esScanlinePF(BitMap->Width, BitMap->PixelFormat);
     #endif
-    
+
     switch(BitMap->PixelFormat)
     {
       case pf1bit:
@@ -914,12 +914,12 @@ void esDrawVLine(PBitMap BitMap, int y1, int y2, int x, TColor Color)
         break;
       case pf4bit:
         p = BitMap->Pixels + scanline*y1 + x/2;
-        b = PixelMask4[x%2]; 
+        b = PixelMask4[x%2];
         break;
-    }      
+    }
     bc = b & esFillByte(Color, BitMap->PixelFormat);
     bn = ~b;
- 
+
     for(y = y1; y <= y2; y++)
     {
       *p = (*p&(bn)) | bc;
@@ -942,14 +942,14 @@ void esDrawVLine(PBitMap BitMap, int y1, int y2, int x, TColor Color)
         for(y = y1; y <= y2; y++)
           esSetPixel4(BitMap, x, y, Color);
         break;
-    } 
+    }
 }
 
 // todo: UP SPEED
 void esDrawLineU(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
 {
-  int t, dist, x_error, y_error, dx, dy, x_inc, y_inc; 
-  
+  int t, dist, x_error, y_error, dx, dy, x_inc, y_inc;
+
   dx = x2 - x1;
   dy = y2 - y1;
   if(dx > 0)x_inc = 1; else x_inc = -1;
@@ -959,10 +959,10 @@ void esDrawLineU(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
   dx = ABS(dx);
   dy = ABS(dy);
   dist = MAX(dx, dy);
-  
+
   x_error = dist>>1;// dist/2;
   y_error = dist>>1;// dist/2;
- 
+
   for(t = 0; t < dist; t++)
   {
     esSetPixel(BitMap, x1, y1, Color);
@@ -1003,22 +1003,22 @@ void esClear(PBitMap BitMap, TColor Color)
       b = esFillByte(Color, BitMap->PixelFormat);
       memset(BitMap->Pixels, b, Scanline1(BitMap->Width)*BitMap->Height);
       break;
-    
+
     case pf2bit:;
     case pfC2:
       b = esFillByte(Color, BitMap->PixelFormat);
       memset(BitMap->Pixels, b, Scanline2(BitMap->Width)*BitMap->Height);
       break;
-      
-    case pf4bit:; 
-      b = esFillByte(Color, BitMap->PixelFormat); 
+
+    case pf4bit:;
+      b = esFillByte(Color, BitMap->PixelFormat);
       memset(BitMap->Pixels, b, Scanline4(BitMap->Width)*BitMap->Height);
       break;
-  }    
+  }
 }
 
 void esSetPixel(PBitMap BitMap, int x, int y, TColor color)
-{ 
+{
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
   #endif
@@ -1027,20 +1027,20 @@ void esSetPixel(PBitMap BitMap, int x, int y, TColor color)
     case pf1bit:
       esSetPixel1(BitMap, x, y, color);
       break;
-    
+
     case pf2bit:;
     case pfC2:
       esSetPixel2(BitMap, x, y, color);
       break;
-      
+
     case pf4bit:
       esSetPixel4(BitMap, x, y, color);
       break;
-  }  
+  }
 }
 
 TColor esGetPixel(PBitMap BitMap, int x, int y)
-{ 
+{
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
   #endif
@@ -1048,34 +1048,34 @@ TColor esGetPixel(PBitMap BitMap, int x, int y)
   {
     case pf1bit:
       return esGetPixel1(BitMap, x, y);
-    
+
     case pf2bit:;
     case pfC2:
       return esGetPixel2(BitMap, x, y);
-      
+
     case pf4bit:
       return esGetPixel4(BitMap, x, y);
-  } 
+  }
 
-  return 0;// for compiler paranoia 
+  return 0;// for compiler paranoia
 }
 
 void esFillRect(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
 {
   int y;
-  #ifdef USE_SAFE_GRAPHICS 
+  #ifdef USE_SAFE_GRAPHICS
   int t;
   #endif
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(x1, y1, x2, y2, CenterX, CenterY);
   #endif
-  
+
   #ifdef SKIP_LAST_PIXEL
   if(IsSLP)DECREMENT_POINT(x2, y2);
   #endif
 
-  #ifdef USE_SAFE_GRAPHICS  
+  #ifdef USE_SAFE_GRAPHICS
   if(IsCheckCoord)
   {
     NORMALIZE_RECT(x1, y1, x2, y2, t);
@@ -1098,17 +1098,17 @@ void esFillRect(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
       for(y = y1; y <= y2; y++)
         esDrawHLine2(BitMap, x1, x2, y, Color);
       break;
-      
+
     case pf4bit:
       for(y = y1; y <= y2; y++)
         esDrawHLine4(BitMap, x1, x2, y, Color);
       break;
-  } 
+  }
 }
 
 void esDrawRect(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
 {
-  #ifdef USE_SAFE_GRAPHICS 
+  #ifdef USE_SAFE_GRAPHICS
   int t;
   #endif
   int IsTop = 1, IsBottom = 1, IsLeft, IsRight;
@@ -1116,13 +1116,13 @@ void esDrawRect(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(x1, y1, x2, y2, CenterX, CenterY);
-  #endif  
-  
+  #endif
+
   #ifdef SKIP_LAST_PIXEL
   if(IsSLP)DECREMENT_POINT(x2, y2);
   #endif
-  
-  #ifdef USE_SAFE_GRAPHICS 
+
+  #ifdef USE_SAFE_GRAPHICS
   if(IsCheckCoord)
   {
     NORMALIZE_RECT(x1, y1, x2, y2, t);
@@ -1218,16 +1218,16 @@ void esDrawRect(PBitMap BitMap, int x1, int y1, int x2, int y2, TColor Color)
   }
   else
     return;// ????????????????????????????????????????????????????????????????????????????????
-  
+
   // Vertical
   if(IS_ENTRY_SEG(y1, y2, 0, BitMap->Height-1))
   {
     if(IsTop)y1++;
     if(IsBottom)y2--;
-    
+
     if(y1 < 0)y1 = 0;
     if(y2 > BitMap->Height - 1)y2 = BitMap->Height - 1;
-    if(x1 >= 0 && x1 < BitMap->Width && !IsLeft)esDrawVLine(BitMap, y1, y2, x1, Color); 
+    if(x1 >= 0 && x1 < BitMap->Width && !IsLeft)esDrawVLine(BitMap, y1, y2, x1, Color);
     if(x1 != x2 && x2 >= 0 && x2 < BitMap->Width && !IsRight)esDrawVLine(BitMap, y1, y2, x2, Color);
   }*/
 }
@@ -1300,7 +1300,7 @@ void ddesDrawElipse(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned cha
   R = (width > height ? height : height) / 2.0f;
 
   j = width < height ? width/(float)height : width/(float)height;
-  
+
   for(y = y1; y < (y2+1)/2; y++)
   {
     x = (int)ceil( j*sqrt(R*R - (float)(y*y)));//x1;
@@ -1319,7 +1319,7 @@ void llesDrawElipse(PBitMap BitMap, int x, int y, int a, int b, int color)
 {
 int col,i,row,bnew;
 long a_square,b_square,two_a_square,two_b_square,four_a_square,four_b_square,d;
- 
+
 
   if(a <= 0 || b <= 0)return;
   b_square=b*b;
@@ -1351,7 +1351,7 @@ long a_square,b_square,two_a_square,two_b_square,four_a_square,four_b_square,d;
   }
 
   d=two_b_square*(col+1)*col+two_a_square*(row*(row-2)+1)+(1-two_a_square)*b_square;
- 
+
   while ((row) + 1)
   {
     esSetPixel1(BitMap,col+x,row+y,color);
@@ -1654,7 +1654,7 @@ void esDrawCircle(PBitMap BitMap, int x1, int y1, int R, unsigned char Color)
   dx = 1 - 2 * width;
   dy = 1 - 2 * height;
   error = 0;
- 
+
   while(y >= 0)
   {
     esSetPixel1(BitMap, cx + x, cy + y, Color);
@@ -1706,7 +1706,7 @@ void nnesDrawCircle(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned cha
   y = R;
   d = 1 - 2 * R;
   error = 0;
- 
+
   while(y >= 0)
   {
     esSetPixel1(BitMap, cx + x, cy + y, Color);
@@ -1751,7 +1751,7 @@ void nnesDrawCircle(PBitMap BitMap, int x1, int y1, int x2, int y2, unsigned cha
 // |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
 // |               |               |               |
 //            |----+---------------+----|
-//          5(a)                      19(b) 
+//          5(a)                      19(b)
 //
 // 17.08.2014 ÍÎ ÊÀÊ? ÊÀÊ ÎÍÎ ÐÀÁÎÒÀÅÒ ???
 
@@ -1831,7 +1831,7 @@ int esBitBlt01_Copy(PBitMap Dst, int x, int y, PBitMap Src)
   pDstLine = Dst->Pixels + DstScan * Start_y;
 
   EndOffset = (x + Src->Width) % 8;
-  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0; 
+  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0;
 
   // scan y
   for(sy = Start_y; sy < End_y; sy++)
@@ -1865,7 +1865,7 @@ int esBitBlt01_Copy(PBitMap Dst, int x, int y, PBitMap Src)
         *pDst = *pSrc;
         pSrc++;
       }
-       
+
     // |.. |
     // view: Source\Doc\OffsetBitBlt.jpg
     if(EndOffset && (x+Src->Width) / 8 < DstScan && NormalDraw)
@@ -1897,7 +1897,7 @@ int esBitBlt01_Copy(PBitMap Dst, int x, int y, PBitMap Src)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -1941,7 +1941,7 @@ int esBitBlt01_Copy(PBitMap Dst, int x, int y, PBitMap Src)
   pDstLine = Dst->Pixels + DstScan * Start_y;
 
   EndOffset = (x + Src->Width) % 8;
-  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0; 
+  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0;
 
   // scan y
   for(sy = Start_y; sy < End_y; sy++)
@@ -1972,7 +1972,7 @@ int esBitBlt01_Copy(PBitMap Dst, int x, int y, PBitMap Src)
       for(; pDst < pDstEnd; pDst++)
       {
         s = *pSrc << (8 - Offset) | *(pSrc+1) >> (Offset);
-        *pDst = s;// -> draw byte 
+        *pDst = s;// -> draw byte
         pSrc++;
       }
     else
@@ -1982,7 +1982,7 @@ int esBitBlt01_Copy(PBitMap Dst, int x, int y, PBitMap Src)
         *pDst = s;// -> draw byte
         pSrc++;
       }
-       
+
     // |.. |
     // view: Source\Doc\OffsetBitBlt.jpg
     if(EndOffset && (x+Src->Width) / 8 < DstScan && NormalDraw)
@@ -2019,7 +2019,7 @@ int esBitBlt01_Or(PBitMap Dst, int x, int y, PBitMap Src)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -2063,7 +2063,7 @@ int esBitBlt01_Or(PBitMap Dst, int x, int y, PBitMap Src)
   pDstLine = Dst->Pixels + DstScan * Start_y;
 
   EndOffset = (x + Src->Width) % 8;
-  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0; 
+  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0;
 
   // scan y
   for(sy = Start_y; sy < End_y; sy++)
@@ -2094,7 +2094,7 @@ int esBitBlt01_Or(PBitMap Dst, int x, int y, PBitMap Src)
       for(; pDst < pDstEnd; pDst++)
       {
         s = *pSrc << (8 - Offset) | *(pSrc+1) >> (Offset);
-        *pDst |= s;// -> draw byte 
+        *pDst |= s;// -> draw byte
         pSrc++;
       }
     else
@@ -2104,7 +2104,7 @@ int esBitBlt01_Or(PBitMap Dst, int x, int y, PBitMap Src)
         *pDst |= s;// -> draw byte
         pSrc++;
       }
-       
+
     // |.. |
     // view: Source\Doc\OffsetBitBlt.jpg
     if(EndOffset && (x+Src->Width) / 8 < DstScan && NormalDraw)
@@ -2141,7 +2141,7 @@ int esBitBlt01_And(PBitMap Dst, int x, int y, PBitMap Src)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -2185,7 +2185,7 @@ int esBitBlt01_And(PBitMap Dst, int x, int y, PBitMap Src)
   pDstLine = Dst->Pixels + DstScan * Start_y;
 
   EndOffset = (x + Src->Width) % 8;
-  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0; 
+  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0;
 
   // scan y
   for(sy = Start_y; sy < End_y; sy++)
@@ -2216,7 +2216,7 @@ int esBitBlt01_And(PBitMap Dst, int x, int y, PBitMap Src)
       for(; pDst < pDstEnd; pDst++)
       {
         s = *pSrc << (8 - Offset) | *(pSrc+1) >> (Offset);
-        *pDst &= s;// -> draw byte 
+        *pDst &= s;// -> draw byte
         pSrc++;
       }
     else
@@ -2226,7 +2226,7 @@ int esBitBlt01_And(PBitMap Dst, int x, int y, PBitMap Src)
         *pDst &= s;// -> draw byte
         pSrc++;
       }
-       
+
     // |.. |
     // view: Source\Doc\OffsetBitBlt.jpg
     if(EndOffset && (x+Src->Width) / 8 < DstScan && NormalDraw)
@@ -2265,7 +2265,7 @@ int esBitBlt01_NotAnd(PBitMap Dst, int x, int y, PBitMap Src)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -2309,7 +2309,7 @@ int esBitBlt01_NotAnd(PBitMap Dst, int x, int y, PBitMap Src)
   pDstLine = Dst->Pixels + DstScan * Start_y;
 
   EndOffset = (x + Src->Width) % 8;
-  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0; 
+  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0;
 
   // scan y
   for(sy = Start_y; sy < End_y; sy++)
@@ -2340,7 +2340,7 @@ int esBitBlt01_NotAnd(PBitMap Dst, int x, int y, PBitMap Src)
       for(; pDst < pDstEnd; pDst++)
       {
         s = (~*pSrc & 0xFF) << (8 - Offset) | (~*(pSrc+1) & 0xFF) >> (Offset);
-        *pDst &= s;// -> draw byte 
+        *pDst &= s;// -> draw byte
         pSrc++;
       }
     else
@@ -2350,7 +2350,7 @@ int esBitBlt01_NotAnd(PBitMap Dst, int x, int y, PBitMap Src)
         *pDst &= ~s;// -> draw byte
         pSrc++;
       }
-       
+
     // |.. |
     // view: Source\Doc\OffsetBitBlt.jpg
     if(EndOffset && (x+Src->Width) / 8 < DstScan && NormalDraw)
@@ -2387,7 +2387,7 @@ int esBitBlt01_Xor(PBitMap Dst, int x, int y, PBitMap Src)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -2431,7 +2431,7 @@ int esBitBlt01_Xor(PBitMap Dst, int x, int y, PBitMap Src)
   pDstLine = Dst->Pixels + DstScan * Start_y;
 
   EndOffset = (x + Src->Width) % 8;
-  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0; 
+  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0;
 
   // scan y
   for(sy = Start_y; sy < End_y; sy++)
@@ -2462,7 +2462,7 @@ int esBitBlt01_Xor(PBitMap Dst, int x, int y, PBitMap Src)
       for(; pDst < pDstEnd; pDst++)
       {
         s = *pSrc << (8 - Offset) | *(pSrc+1) >> (Offset);
-        *pDst ^= s;// -> draw byte 
+        *pDst ^= s;// -> draw byte
         pSrc++;
       }
     else
@@ -2472,7 +2472,7 @@ int esBitBlt01_Xor(PBitMap Dst, int x, int y, PBitMap Src)
         *pDst ^= s;// -> draw byte
         pSrc++;
       }
-       
+
     // |.. |
     // view: Source\Doc\OffsetBitBlt.jpg
     if(EndOffset && (x+Src->Width) / 8 < DstScan && NormalDraw)
@@ -2510,7 +2510,7 @@ int esBitBlt01_MaskData(PBitMap Dst, int x, int y, PBitMap Src, unsigned char *M
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -2555,7 +2555,7 @@ int esBitBlt01_MaskData(PBitMap Dst, int x, int y, PBitMap Src, unsigned char *M
   pDstLine = Dst->Pixels + DstScan * Start_y;
 
   EndOffset = (x + Src->Width) % 8;
-  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0; 
+  NormalDraw = Offset + Src->Width > 7 || Offset == 0 || EndOffset == 0;
 
   // scan y
   for(sy = Start_y; sy < End_y; sy++)
@@ -2592,7 +2592,7 @@ int esBitBlt01_MaskData(PBitMap Dst, int x, int y, PBitMap Src, unsigned char *M
       {
         s = *pSrc << (8 - Offset) | *(pSrc+1) >> (Offset);
         m = *pMask << (8 - Offset) | *(pMask+1) >> (Offset);
-        *pDst = s & m | *pDst & ~m;// -> draw byte 
+        *pDst = s & m | *pDst & ~m;// -> draw byte
         pSrc++;
         pMask++;
       }
@@ -2604,7 +2604,7 @@ int esBitBlt01_MaskData(PBitMap Dst, int x, int y, PBitMap Src, unsigned char *M
         pSrc++;
         pMask++;
       }
-       
+
     // |.. |
     // view: Source\Doc\OffsetBitBlt.jpg
     if(EndOffset && (x+Src->Width) / 8 < DstScan && NormalDraw)
@@ -2618,7 +2618,7 @@ int esBitBlt01_MaskData(PBitMap Dst, int x, int y, PBitMap Src, unsigned char *M
         else
         {
           s = *pSrc << (8 - Offset) | *(pSrc+1) >> Offset & LPixels01[EndOffset];
-          m = *pMask << (8 - Offset) | *(pMask+1) >> Offset & LPixels01[EndOffset]; 
+          m = *pMask << (8 - Offset) | *(pMask+1) >> Offset & LPixels01[EndOffset];
         }
       else
       {
@@ -2653,7 +2653,7 @@ int esBitBlt04_Copy(PBitMap Dst, int x, int y, PBitMap Src)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -2709,7 +2709,7 @@ int esBitBlt04_Copy(PBitMap Dst, int x, int y, PBitMap Src)
     if(IsLeftParticle)
     {
       s = *pSrc >> 4;
-      *pDst = s | (*pDst & 0xF0);// -> draw byte 
+      *pDst = s | (*pDst & 0xF0);// -> draw byte
 
       pDst++;
     }
@@ -2721,7 +2721,7 @@ int esBitBlt04_Copy(PBitMap Dst, int x, int y, PBitMap Src)
       for(; pDst < pDstEnd; pDst++)
       {
         s = *pSrc << 4 | *(pSrc+1) >> 4;
-        *pDst = s;// -> draw byte 
+        *pDst = s;// -> draw byte
         pSrc++;
       }
     else
@@ -2731,7 +2731,7 @@ int esBitBlt04_Copy(PBitMap Dst, int x, int y, PBitMap Src)
         *pDst = s;// -> draw byte
         pSrc++;
       }
-       
+
     // |.. |
     if(IsRightParticle)
     {
@@ -2761,7 +2761,7 @@ int esBitBlt04_Or(PBitMap Dst, int x, int y, PBitMap Src)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -2817,7 +2817,7 @@ int esBitBlt04_Or(PBitMap Dst, int x, int y, PBitMap Src)
     if(IsLeftParticle)
     {
       s = *pSrc >> 4;
-      *pDst |= s;// -> draw byte 
+      *pDst |= s;// -> draw byte
 
       pDst++;
     }
@@ -2829,7 +2829,7 @@ int esBitBlt04_Or(PBitMap Dst, int x, int y, PBitMap Src)
       for(; pDst < pDstEnd; pDst++)
       {
         s = *pSrc << 4 | *(pSrc+1) >> 4;
-        *pDst |= s;// -> draw byte 
+        *pDst |= s;// -> draw byte
         pSrc++;
       }
     else
@@ -2839,7 +2839,7 @@ int esBitBlt04_Or(PBitMap Dst, int x, int y, PBitMap Src)
         *pDst |= s;// -> draw byte
         pSrc++;
       }
-       
+
     // |.. |
     if(IsRightParticle)
     {
@@ -2869,7 +2869,7 @@ int esBitBlt04_Xor(PBitMap Dst, int x, int y, PBitMap Src)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -2925,7 +2925,7 @@ int esBitBlt04_Xor(PBitMap Dst, int x, int y, PBitMap Src)
     if(IsLeftParticle)
     {
       s = *pSrc >> 4;
-      *pDst ^= s;// -> draw byte 
+      *pDst ^= s;// -> draw byte
 
       pDst++;
     }
@@ -2937,7 +2937,7 @@ int esBitBlt04_Xor(PBitMap Dst, int x, int y, PBitMap Src)
       for(; pDst < pDstEnd; pDst++)
       {
         s = *pSrc << 4 | *(pSrc+1) >> 4;
-        *pDst ^= s;// -> draw byte 
+        *pDst ^= s;// -> draw byte
         pSrc++;
       }
     else
@@ -2947,7 +2947,7 @@ int esBitBlt04_Xor(PBitMap Dst, int x, int y, PBitMap Src)
         *pDst ^= s;// -> draw byte
         pSrc++;
       }
-       
+
     // |.. |
     if(IsRightParticle)
     {
@@ -2978,7 +2978,7 @@ int esBitBlt04_And(PBitMap Dst, int x, int y, PBitMap Src)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -3034,7 +3034,7 @@ int esBitBlt04_And(PBitMap Dst, int x, int y, PBitMap Src)
     if(IsLeftParticle)
     {
       s = *pSrc >> 4;
-      *pDst &= s | 0xF0;// -> draw byte 
+      *pDst &= s | 0xF0;// -> draw byte
 
       pDst++;
     }
@@ -3046,7 +3046,7 @@ int esBitBlt04_And(PBitMap Dst, int x, int y, PBitMap Src)
       for(; pDst < pDstEnd; pDst++)
       {
         s = *pSrc << 4 | *(pSrc+1) >> 4;
-        *pDst &= s;// -> draw byte 
+        *pDst &= s;// -> draw byte
         pSrc++;
       }
     else
@@ -3056,7 +3056,7 @@ int esBitBlt04_And(PBitMap Dst, int x, int y, PBitMap Src)
         *pDst &= s;// -> draw byte
         pSrc++;
       }
-       
+
     // |.. |
     if(IsRightParticle)
     {
@@ -3087,7 +3087,7 @@ int esBitBlt04_MaskData(PBitMap Dst, int x, int y, PBitMap Src, unsigned char *M
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -3146,7 +3146,7 @@ int esBitBlt04_MaskData(PBitMap Dst, int x, int y, PBitMap Src, unsigned char *M
     {
       s = *pSrc >> 4;
       m = *pMask >> 4;
-      *pDst = (*pDst & ~m | s & m);// | 0xF0;// -> draw byte s s | 0xF0;// -> draw byte 
+      *pDst = (*pDst & ~m | s & m);// | 0xF0;// -> draw byte s s | 0xF0;// -> draw byte
 
       pDst++;
     }
@@ -3159,7 +3159,7 @@ int esBitBlt04_MaskData(PBitMap Dst, int x, int y, PBitMap Src, unsigned char *M
       {
         s = *pSrc << 4 | *(pSrc+1) >> 4;
         m = *pMask << 4 | *(pMask+1) >> 4;
-        *pDst = *pDst & ~m | s & m;// -> draw byte 
+        *pDst = *pDst & ~m | s & m;// -> draw byte
         pSrc++;
         pMask++;
       }
@@ -3172,7 +3172,7 @@ int esBitBlt04_MaskData(PBitMap Dst, int x, int y, PBitMap Src, unsigned char *M
         pSrc++;
         pMask++;
       }
-       
+
     // |.. |
     if(IsRightParticle)
     {
@@ -3186,7 +3186,7 @@ int esBitBlt04_MaskData(PBitMap Dst, int x, int y, PBitMap Src, unsigned char *M
         s = *pSrc & 0xF0;
         m = *pMask & 0xF0;
       }
-      *pDst = *pDst & ~m | s & m;// -> draw byte 
+      *pDst = *pDst & ~m | s & m;// -> draw byte
     }
 
     pSrcLine = pSrcLine + SrcScan;
@@ -3213,7 +3213,7 @@ int esBitBlt04_Transparent(PBitMap Dst, int x, int y, PBitMap Src)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -3296,7 +3296,7 @@ int esBitBlt04_Transparent(PBitMap Dst, int x, int y, PBitMap Src)
           if((s & 0xF0) != TranspShift)m |= 0xF0;
           *pDst = *pDst & ~m | s & m;// -> draw byte
         }
-        
+
         pSrc++;
       }
     else
@@ -3313,7 +3313,7 @@ int esBitBlt04_Transparent(PBitMap Dst, int x, int y, PBitMap Src)
         }
         pSrc++;
       }
-       
+
     // |.. |
     if(IsRightParticle)
     {
@@ -3346,7 +3346,7 @@ int esBitBlt04_Color(PBitMap Dst, int x, int y, PBitMap Src, TColor Color)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_POINT(x, y, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(x >= Dst->Width || y >= Dst->Height || x + Src->Width < 0 || y + Src->Height < 0)
     return 0;
@@ -3421,7 +3421,7 @@ int esBitBlt04_Color(PBitMap Dst, int x, int y, PBitMap Src, TColor Color)
       {
         s = *pSrc << 4 | *(pSrc+1) >> 4;
         *pDst = *pDst & ~s | s & FillColor;// -> draw byte
-        
+
         pSrc++;
       }
     else
@@ -3432,7 +3432,7 @@ int esBitBlt04_Color(PBitMap Dst, int x, int y, PBitMap Src, TColor Color)
 
         pSrc++;
       }
-       
+
     // |.. |
     if(IsRightParticle)
     {
@@ -3469,10 +3469,10 @@ int esBitBlt01(PBitMap Dst, int x, int y, PBitMap Src)
         return 0;
 
     case afColor:
-      return 0; 
+      return 0;
   }
 
-  return 0;// for compiler paranoia 
+  return 0;// for compiler paranoia
 }
 
 int esBitBlt04(PBitMap Dst, int x, int y, PBitMap Src)
@@ -3492,7 +3492,7 @@ int esBitBlt04(PBitMap Dst, int x, int y, PBitMap Src)
       return esBitBlt04_Transparent(Dst, x, y, Src);
   }
 
-  return 0;// for compiler paranoia 
+  return 0;// for compiler paranoia
 }
 
 // to do: add pixel formats
@@ -3509,7 +3509,7 @@ int esBitBlt(PBitMap Dst, int x, int y, PBitMap Src)
       return 0;
   }
 
-  return 0;// for compiler paranoia 
+  return 0;// for compiler paranoia
 }
 
 int esBitBltRop01(PBitMap Dst, int x, int y, PBitMap Src, TRop Rop)
@@ -3528,7 +3528,7 @@ int esBitBltRop01(PBitMap Dst, int x, int y, PBitMap Src, TRop Rop)
       return esBitBlt01_NotAnd(Dst, x, y, Src);
   }
 
-  return 0;// for compiler paranoia 
+  return 0;// for compiler paranoia
 }
 
 int esBitBltRop04(PBitMap Dst, int x, int y, PBitMap Src, TRop Rop)
@@ -3545,7 +3545,7 @@ int esBitBltRop04(PBitMap Dst, int x, int y, PBitMap Src, TRop Rop)
       return esBitBlt04_And(Dst, x, y, Src);
   }
 
-  return 0;// for compiler paranoia 
+  return 0;// for compiler paranoia
 }
 
 // to do: add pixel formats
@@ -3562,7 +3562,7 @@ int esBitBltRop(PBitMap Dst, int x, int y, PBitMap Src, TRop Rop)
       return 0;
   }
 
-  return 0;// for compiler paranoia 
+  return 0;// for compiler paranoia
 }
 
 
@@ -3577,8 +3577,8 @@ void G_esStrechDraw01(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
-  
+  #endif
+
   w = s.x2 - s.x1;
   h = s.y2 - s.y1;
 
@@ -3598,8 +3598,8 @@ void G_esStrechDraw01(PBitMap Dst, TRect d, PBitMap Src, TRect s)
   {
     for(sx = d.x1; sx < d.x2; sx++)
     {
-      x = s.x1 + (s.x2-s.x1)/(float)(d.x2-d.x1) * (float)(sx-d.x1+0.5f);   
-      y = s.y1 + (s.y2-s.y1)/(float)(d.y2-d.y1) * (float)(sy-d.y1+0.5f); 
+      x = s.x1 + (s.x2-s.x1)/(float)(d.x2-d.x1) * (float)(sx-d.x1+0.5f);
+      y = s.y1 + (s.y2-s.y1)/(float)(d.y2-d.y1) * (float)(sy-d.y1+0.5f);
       Color = esGetPixel1(Src, x, y);
       esSetPixel1(Dst, sx, sy, Color);
     }
@@ -3616,8 +3616,8 @@ void ooG_esStrechDraw01(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
-  
+  #endif
+
   w = s.x2 - s.x1;
   h = s.y2 - s.y1;
 
@@ -3645,7 +3645,7 @@ void ooG_esStrechDraw01(PBitMap Dst, TRect d, PBitMap Src, TRect s)
     fx = s_fx;
     for(sx = d.x1; sx < d.x2; sx++)
     {
-      x = (int)fx;  
+      x = (int)fx;
       y = (int)fy;
       Color = esGetPixel1(Src, x, y);
       esSetPixel1(Dst, sx, sy, Color);
@@ -3665,7 +3665,7 @@ void esStrechDraw01_Copy(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(d.x1 > d.x2)
   {
@@ -3707,7 +3707,7 @@ void esStrechDraw01_Or(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(d.x1 > d.x2)
   {
@@ -3749,7 +3749,7 @@ void esStrechDraw01_Xor(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(d.x1 > d.x2)
   {
@@ -3791,7 +3791,7 @@ void esStrechDraw01_And(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(d.x1 > d.x2)
   {
@@ -3834,7 +3834,7 @@ void esStrechDraw01_Mask(PBitMap Dst, TRect d, PBitMap Src, TRect s, PBitMap Mas
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(d.x1 > d.x2)
   {
@@ -3881,7 +3881,7 @@ void esStrechDraw04_Copy(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(d.x1 > d.x2)
   {
@@ -3923,7 +3923,7 @@ void esStrechDraw04_Or(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(d.x1 > d.x2)
   {
@@ -3965,7 +3965,7 @@ void esStrechDraw04_Xor(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(d.x1 > d.x2)
   {
@@ -4007,7 +4007,7 @@ void esStrechDraw04_And(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(d.x1 > d.x2)
   {
@@ -4050,7 +4050,7 @@ void esStrechDraw04_Mask(PBitMap Dst, TRect d, PBitMap Src, TRect s, PBitMap Mas
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(d.x1 > d.x2)
   {
@@ -4099,7 +4099,7 @@ void esStrechDraw04_Transparent(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
+  #endif
 
   Transp = Src->TransparentColor;
 
@@ -4149,7 +4149,7 @@ void esStrechDraw04_Color(PBitMap Dst, TRect d, PBitMap Src, TRect s, TColor Fil
 
   #ifdef USE_TRANSLATE
   if(IsTranslate)TRANSLATE_RECT(d.x1, d.y1, d.x2, d.y2, CenterX, CenterY);
-  #endif 
+  #endif
 
   if(d.x1 > d.x2)
   {
@@ -4213,7 +4213,7 @@ int esStrechDraw01(PBitMap Dst, TRect d, PBitMap Src, TRect s)
         return 0;
 
     case afColor:
-      return 0; 
+      return 0;
   }
 
   return 0;// for compiler paranoia
@@ -4243,10 +4243,10 @@ int esStrechDraw04(PBitMap Dst, TRect d, PBitMap Src, TRect s)
 
     case afColor:
       esStrechDraw04_Transparent(Dst, d, Src, s);
-      return 1; 
+      return 1;
   }
 
-  return 0;// for compiler paranoia 
+  return 0;// for compiler paranoia
 }
 
 // to do: add pixel formats
@@ -4263,7 +4263,7 @@ int esStrechDraw(PBitMap Dst, TRect d, PBitMap Src, TRect s)
       return 0;
   }
 
-  return 0;// for compiler paranoia 
+  return 0;// for compiler paranoia
 }
 
 // to do: Add return`s error
@@ -4324,7 +4324,7 @@ int esStrechDrawRop(PBitMap Dst, TRect d, PBitMap Src, TRect s, TRop Rop)
       return 0;
   }
 
-  return 0;// for compiler paranoia 
+  return 0;// for compiler paranoia
 }
 
 // Align
@@ -4380,7 +4380,7 @@ int esAlignDrawRop(PBitMap Dst, PBitMap Src, unsigned int Align, TRop Rop)
     else
       x = Dst->Width - Src->Width;
   }
- 
+
   return esBitBltRop(Dst, x, y, Src, Rop);
 }
 
@@ -4420,7 +4420,7 @@ void esInverseBitMap(PBitMap BitMap)
   Scanline = esScanline(BitMap);
   p = BitMap->Pixels;
   pEnd = BitMap->Pixels + BitMap->Height * Scanline;
-  
+
   do
   {
     *p = ~*p;
@@ -4498,9 +4498,9 @@ void esRotate90BitMap(PBitMap BitMap, int Angle)
         for(x = 0; x < BitMap->Width; x++)
         {
           t = esGetPixel(BitMap, x, BitMap->Height - y - 1);
-          esSetPixel(R, y, x, t); 
+          esSetPixel(R, y, x, t);
         }
-      }  
+      }
       break;
     case 2:
       for(y = 0; y < BitMap->Height; y++)
@@ -4508,9 +4508,9 @@ void esRotate90BitMap(PBitMap BitMap, int Angle)
         for(x = 0; x < BitMap->Width; x++)
         {
           t = esGetPixel(BitMap, BitMap->Width - x - 1, BitMap->Height - y - 1);
-          esSetPixel(R, x, y, t); 
+          esSetPixel(R, x, y, t);
         }
-      }  
+      }
       break;
     case 3:
       for(y = 0; y < BitMap->Height; y++)
@@ -4518,9 +4518,9 @@ void esRotate90BitMap(PBitMap BitMap, int Angle)
         for(x = 0; x < BitMap->Width; x++)
         {
           t = esGetPixel(BitMap, BitMap->Width - x - 1, y);
-          esSetPixel(R, y, x, t); 
+          esSetPixel(R, y, x, t);
         }
-      } 
+      }
       break;
   }
 
@@ -4587,7 +4587,7 @@ int esIsCompatibleBitMap(PBitMap Dst, PBitMap Src)
 PBitMap esCreateBlankBitMap(TPixelFormat pf)
 {
   PBitMap BitMap;
-  
+
   BitMap = (PBitMap)malloc(sizeof(TBitMap));
 
   BitMap->Width = 0;
@@ -4606,7 +4606,7 @@ PBitMap esCreateBlankBitMap(TPixelFormat pf)
 PBitMap esCreateBitMap(int Width, int Height, TPixelFormat pf)
 {
   PBitMap BitMap;
-  
+
   BitMap = (PBitMap)malloc(sizeof(TBitMap));
 
   BitMap->Width = Width;
@@ -4617,7 +4617,7 @@ PBitMap esCreateBitMap(int Width, int Height, TPixelFormat pf)
   #ifdef USE_PRECALC_SCANLINE
   BitMap->Scanline = esScanlinePF(BitMap->Width, BitMap->PixelFormat);
   #endif
-  
+
   BitMap->Pixels = esCreateBitMapData(Width, Height, pf);
   BitMap->Mask = 0;
   // add exept
@@ -4638,7 +4638,7 @@ PBitMap esCreateBitMapOf(int Width, int Height, TPixelFormat pf, const unsigned 
 PBitMap esCreateStaticBitMap(int Width, int Height, TPixelFormat pf, const unsigned char *Pixels)
 {
   PBitMap BitMap;
-  
+
   BitMap = (PBitMap)malloc(sizeof(TBitMap));
 
   BitMap->Width = Width;
@@ -4659,7 +4659,7 @@ PBitMap esCreateStaticMaskBitMap(int Width, int Height, TPixelFormat pf, const u
   const unsigned char *Mask)
 {
   PBitMap BitMap;
-  
+
   BitMap = esCreateStaticBitMap(Width, Height, pf, Pixels);
   BitMap->AlphaFormat = afMask;
   BitMap->Mask = (unsigned char*)Mask;
@@ -4689,7 +4689,7 @@ void esResizeBitMapEx(PBitMap BitMap, int Width, int Height, unsigned char Color
   Temp = esCloneBitMap(BitMap);
 
   esResizeBitMap(BitMap, Width, Height);
-  
+
   //if((Align & alStretch) == 0)
   esClear(BitMap, Color);
 
