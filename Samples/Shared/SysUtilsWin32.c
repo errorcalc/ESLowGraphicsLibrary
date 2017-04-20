@@ -82,9 +82,9 @@ void SysDrawBuffer(unsigned char *p)
 
   for(i = 0; i < CountColors; i++)
   {
-    BitsInfo->bmiColors[i].rgbRed   = (Palette[i] >> 4) & 0xFF;
-    BitsInfo->bmiColors[i].rgbGreen = (Palette[i] >> 2) & 0xFF;
-    BitsInfo->bmiColors[i].rgbBlue  = (Palette[i] >> 0) & 0xFF;
+	  BitsInfo->bmiColors[i].rgbRed = (Palette[i] >> 16) & 0xFF;
+	  BitsInfo->bmiColors[i].rgbGreen = (Palette[i] >> 8) & 0xFF;
+	  BitsInfo->bmiColors[i].rgbBlue = (Palette[i] >> 0) & 0xFF;
   }
 
   StretchDIBits(DC,
