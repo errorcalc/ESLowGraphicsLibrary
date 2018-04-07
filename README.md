@@ -6,6 +6,11 @@ ESLowGraphicsLibrary - Low level software graphics library.
 
 Library written on “C”, but imitate PLO.
 
+Used in demos:
+https://youtube.com/watch?v=zL_2NWtxLQE  
+https://youtube.com/watch?v=SEtI-ua7vN8
+
+
 #Library supports these operations:
 
 **BitMap functions:**
